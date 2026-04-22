@@ -1,0 +1,13 @@
+{
+	"recommendations": [
+		"esbenp.prettier-vscode",
+		"yoavbls.pretty-ts-errors",
+		"dbaeumer.vscode-eslint",
+		"yzhang.markdown-all-in-one",
+		"davidanson.vscode-markdownlint",
+		"pkief.material-icon-theme",
+		"cardinal90.multi-cursor-case-preserve",
+		"bradlc.vscode-tailwindcss",
+		"wayou.vscode-todo-highlight"
+	]
+}
