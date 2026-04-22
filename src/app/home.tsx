@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ExportModal } from "../components/export-modal"
 import { Footer } from "../components/footer"
 import { Header } from "../components/header"
@@ -6,18 +6,39 @@ import { GridUI } from "../components/grid-ui"
 import { loadImg, triggerDownload, searchMemes } from "@/lib/utils"
 import type { Dims, MemeFormat, SizePreset } from "@/types"
 
+const getDimsForPreset = (preset: SizePreset, natW: number, natH: number) => {
+	const aspect = natW / natH
+
+	if (preset === "sm") {
+		return { w: 240, h: Math.round(240 / aspect) }
+	}
+
+	if (preset === "md") {
+		return { w: 480, h: Math.round(480 / aspect) }
+	}
+
+	if (preset === "lg") {
+		return { w: 800, h: Math.round(800 / aspect) }
+	}
+
+	if (preset === "sq") {
+		return { w: 512, h: 512 }
+	}
+
+	return { w: natW, h: natH }
+}
+
+const isGifFile = (name: string) => name.toLowerCase().endsWith(".gif")
+
 export default function HomePage() {
 	const [images, setImages] = useState<string[]>([])
 	const [search, setSearch] = useState("")
 	const [selectedMeme, setSelectedMeme] = useState<string | null>(null)
 
 	const [fmt, setFmt] = useState<MemeFormat>("png")
-	const [bg, setBg] = useState("transparent")
 	const [quality, setQuality] = useState(92)
 	const [preset, setPreset] = useState<SizePreset>("original")
-	const [lockRatio, setLockRatio] = useState(true)
 	const [dims, setDims] = useState<Dims>({ w: 0, h: 0, natW: 0, natH: 0 })
-	const [estSize, setEstSize] = useState("—")
 	const [isRendering, setIsRendering] = useState(false)
 
 	useEffect(() => {
@@ -32,14 +53,13 @@ export default function HomePage() {
 	}, [images, search])
 
 	const openModal = async (name: string) => {
+		const gifFile = isGifFile(name)
+
 		setSelectedMeme(name)
-		setFmt("png")
-		setBg("transparent")
+		setFmt(gifFile ? "gif" : "png")
 		setQuality(92)
 		setPreset("original")
-		setLockRatio(true)
 		setDims({ w: 0, h: 0, natW: 0, natH: 0 })
-		setEstSize("—")
 
 		try {
 			const img = await loadImg(`/assets/${name}`)
@@ -58,37 +78,16 @@ export default function HomePage() {
 		setSelectedMeme(null)
 	}
 
-	useEffect(() => {
-		if (preset === "custom") return
-		const { natW, natH } = dims
-		if (!natW || !natH) return
+	const { natW, natH } = dims
+	const exportDims =
+		natW && natH
+			? { ...getDimsForPreset(preset, natW, natH), natW, natH }
+			: { w: 0, h: 0, natW, natH }
 
-		const aspect = natW / natH
-		let w = natW
-		let h = natH
-
-		if (preset === "sm") {
-			w = 240
-			h = Math.round(240 / aspect)
-		} else if (preset === "md") {
-			w = 480
-			h = Math.round(480 / aspect)
-		} else if (preset === "lg") {
-			w = 800
-			h = Math.round(800 / aspect)
-		} else if (preset === "sq") {
-			w = 512
-			h = 512
-		}
-
-		setDims(prev => ({ ...prev, w, h }))
-	}, [preset, dims.natW, dims.natH])
-
-	useEffect(() => {
-		const { w, h } = dims
+	const estSize = (() => {
+		const { w, h } = exportDims
 		if (!w || !h || fmt === "gif") {
-			setEstSize(fmt === "gif" ? "original" : "—")
-			return
+			return fmt === "gif" ? "original" : "—"
 		}
 
 		const px = w * h
@@ -99,27 +98,21 @@ export default function HomePage() {
 		else if (fmt === "webp") kb = Math.round((px * q * 0.12) / 1024)
 		else if (fmt === "png") kb = Math.round((px * 0.7) / 1024)
 
-		setEstSize(kb < 1024 ? `${kb} KB` : `${(kb / 1024).toFixed(1)} MB`)
-	}, [dims.w, dims.h, fmt, quality])
+		return kb < 1024 ? `${kb} KB` : `${(kb / 1024).toFixed(1)} MB`
+	})()
 
 	const renderCanvas = async () => {
 		if (!selectedMeme) return null
 		const img = await loadImg(`/assets/${selectedMeme}`)
-		const { w, h } = dims
+		const { w, h } = exportDims
 		const canvas = document.createElement("canvas")
 		canvas.width = w
 		canvas.height = h
 		const ctx = canvas.getContext("2d")
 		if (!ctx) return null
 
-		let fill: string | null = null
 		if (fmt === "jpg") {
-			fill = bg === "transparent" ? "#ffffff" : bg
-		} else if (bg !== "transparent") {
-			fill = bg
-		}
-		if (fill) {
-			ctx.fillStyle = fill
+			ctx.fillStyle = "#ffffff"
 			ctx.fillRect(0, 0, w, h)
 		}
 
@@ -147,7 +140,10 @@ export default function HomePage() {
 
 				canvas.toBlob(
 					blob => {
-						if (!blob) return
+						if (!blob) {
+							setIsRendering(false)
+							return
+						}
 						const url = URL.createObjectURL(blob)
 						const ext = fmt
 						triggerDownload(
@@ -176,7 +172,10 @@ export default function HomePage() {
 			const canvas = await renderCanvas()
 			if (!canvas) return
 			canvas.toBlob(async blob => {
-				if (!blob) return
+				if (!blob) {
+					setIsRendering(false)
+					return
+				}
 				try {
 					await navigator.clipboard.write([
 						new ClipboardItem({ "image/png": blob }),
@@ -218,16 +217,11 @@ export default function HomePage() {
 					onClose={closeModal}
 					fmt={fmt}
 					setFmt={setFmt}
-					bg={bg}
-					setBg={setBg}
 					quality={quality}
 					setQuality={setQuality}
 					preset={preset}
 					setPreset={setPreset}
-					lockRatio={lockRatio}
-					setLockRatio={setLockRatio}
-					dims={dims}
-					setDims={setDims}
+					dims={exportDims}
 					estSize={estSize}
 					isRendering={isRendering}
 					onDownload={handleDownload}

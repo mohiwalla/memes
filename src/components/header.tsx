@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import { Search, X } from "lucide-react"
 
 type HomeHeaderProps = {
@@ -11,6 +12,51 @@ export function Header({
 	onSearchChange,
 	filteredCount,
 }: HomeHeaderProps) {
+	const searchRef = useRef<HTMLInputElement>(null)
+
+	useEffect(() => {
+		const isEditableTarget = (target: EventTarget | null) => {
+			if (!(target instanceof HTMLElement)) return false
+
+			return (
+				target.isContentEditable ||
+				target.tagName === "INPUT" ||
+				target.tagName === "TEXTAREA" ||
+				target.tagName === "SELECT"
+			)
+		}
+
+		const focusSearch = () => {
+			searchRef.current?.focus()
+			searchRef.current?.select()
+		}
+
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (
+				(event.metaKey || event.ctrlKey) &&
+				event.key.toLowerCase() === "f"
+			) {
+				event.preventDefault()
+				focusSearch()
+				return
+			}
+
+			if (
+				event.key === "/" &&
+				!event.metaKey &&
+				!event.ctrlKey &&
+				!event.altKey &&
+				!isEditableTarget(event.target)
+			) {
+				event.preventDefault()
+				focusSearch()
+			}
+		}
+
+		window.addEventListener("keydown", onKeyDown)
+		return () => window.removeEventListener("keydown", onKeyDown)
+	}, [])
+
 	return (
 		<header className="relative z-10 px-6 pt-9 pb-4 sm:px-12">
 			<div className="flex flex-wrap items-center justify-between gap-5">
@@ -34,11 +80,13 @@ export function Header({
 							strokeWidth={2.5}
 						/>
 						<input
+							ref={searchRef}
 							type="text"
-							placeholder="search memes…"
+							placeholder="search memes... (/ or Ctrl/Cmd+F)"
+							aria-label="Search memes"
 							value={search}
 							onChange={e => onSearchChange(e.target.value)}
-							className="w-[180px] sm:w-[230px] rounded-full border-[2.5px] border-meme-ink bg-meme-paper px-8.5 py-2.5 font-sans text-sm font-medium text-meme-ink outline-none shadow-[3px_3px_0_var(--color-meme-ink)] transition-all focus:border-meme-accent focus:shadow-[5px_5px_0_var(--color-meme-accent)] placeholder:text-meme-ink-2"
+							className="w-[220px] sm:w-[310px] rounded-full border-[2.5px] border-meme-ink bg-meme-paper px-8.5 py-2.5 font-sans text-sm font-medium text-meme-ink outline-none shadow-[3px_3px_0_var(--color-meme-ink)] transition-all focus:border-meme-accent focus:shadow-[5px_5px_0_var(--color-meme-accent)] placeholder:text-meme-ink-2"
 						/>
 						{search && (
 							<button
