@@ -10,7 +10,6 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
 
 # Editor directories and files
 .idea
@@ -22,4 +21,4 @@ dist-ssr
 *.sw?
 
 # User defined
-# tmp
+tmp
