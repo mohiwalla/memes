@@ -1,10 +1,3 @@
-# vite + react project
+# memes-stash
 
-Pre-configured:
-
-- react-router
-- tailwindcss
-- shadcn
-- .husky
-- .vscode
-- AGENTS.md (ln -s CLAUDE, GEMINI)
+A web app for managing and sharing memes.

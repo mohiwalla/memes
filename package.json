@@ -1,7 +1,7 @@
 {
 	"name": "react",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
@@ -9,6 +9,7 @@
 		"lint": "eslint .",
 		"preview": "vite preview",
 		"prepare": "husky",
+		"static-list": "bun src/scripts/static-list.ts",
 		"format": "prettier --write ."
 	},
 	"dependencies": {
