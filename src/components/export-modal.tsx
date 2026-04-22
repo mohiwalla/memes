@@ -1,7 +1,15 @@
-import { X, Download, Copy } from "lucide-react"
+import { Download, Copy } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import type { Dims, MemeFormat, SizePreset } from "@/types"
-import { getExt, makeTitle } from "@/lib/utils"
+import { getExt, getTagsForMeme, makeTitle } from "@/lib/utils"
 
 export type ExportModalProps = {
 	selectedMeme: string
@@ -35,20 +43,11 @@ export function ExportModal({
 	onCopy,
 }: ExportModalProps) {
 	const isGifFile = selectedMeme.toLowerCase().endsWith(".gif")
+	const tags = getTagsForMeme(selectedMeme)
 
 	return (
-		<div
-			className="fixed inset-0 z-100 grid place-items-center bg-meme-ink/70 p-6 animate-in fade-in duration-200 backdrop-blur-sm"
-			onClick={e => e.target === e.currentTarget && onClose()}
-		>
-			<div className="relative grid max-h-[92vh] w-full max-w-[1060px] grid-cols-1 overflow-hidden rounded-[28px] border-3 border-meme-ink bg-meme-paper shadow-[10px_10px_0_var(--color-meme-ink)] animate-in zoom-in-95 duration-220 md:grid-cols-[1.1fr_1fr]">
-				<button
-					onClick={onClose}
-					className="absolute top-3.5 right-3.5 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-meme-ink bg-meme-paper font-bold shadow-[3px_3px_0_var(--color-meme-ink)] transition-all hover:rotate-90 hover:bg-meme-accent hover:text-meme-paper"
-				>
-					<X size={18} strokeWidth={3} />
-				</button>
-
+		<Dialog open onOpenChange={open => !open && onClose()}>
+			<DialogContent variant="meme" className="gap-0 p-0" showCloseButton>
 				<div className="flex flex-col gap-4 overflow-auto border-meme-ink bg-meme-bg-2 p-8 md:max-h-[92vh] md:border-r-2 md:border-dashed">
 					<div className="grid min-h-[280px] flex-1 place-items-center">
 						<div className="max-w-full rounded-2xl border-2 border-meme-ink bg-[linear-gradient(45deg,#0001_25%,transparent_25%),linear-gradient(-45deg,#0001_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#0001_75%),linear-gradient(-45deg,transparent_75%,#0001_75%)] p-3.5 shadow-[4px_4px_0_var(--color-meme-ink)]">
@@ -71,16 +70,16 @@ export function ExportModal({
 				</div>
 
 				<div className="flex flex-col overflow-auto p-7 pt-7 pb-6 md:max-h-[92vh]">
-					<div className="mb-5">
-						<h2 className="font-heading text-[28px] leading-tight tracking-tight">
+					<DialogHeader className="mb-5 gap-1">
+						<DialogTitle className="font-heading text-[28px] leading-tight tracking-tight text-meme-ink">
 							Export
-						</h2>
-						<p className="mt-1 text-[13px] text-meme-ink-2">
+						</DialogTitle>
+						<DialogDescription className="text-[13px] text-meme-ink-2">
 							{isGifFile
 								? "GIF stays original. Animation stays intact."
 								: "Pick format, resize, ship."}
-						</p>
-					</div>
+						</DialogDescription>
+					</DialogHeader>
 
 					{!isGifFile && (
 						<div className="mb-5">
@@ -175,6 +174,25 @@ export function ExportModal({
 						</div>
 					)}
 
+					<div className="mb-5">
+						<div className="mb-2.5 font-mono text-[10px] font-semibold uppercase tracking-[.14em] text-meme-ink-2">
+							Tags
+						</div>
+						{tags.length ? (
+							<div className="flex flex-wrap gap-2">
+								{tags.map(tag => (
+									<Badge key={tag} variant="outline">
+										{tag}
+									</Badge>
+								))}
+							</div>
+						) : (
+							<p className="text-[13px] text-meme-ink-2">
+								No tags yet.
+							</p>
+						)}
+					</div>
+
 					<div className="mt-auto">
 						<div className="flex justify-between rounded-xl border-2 border-dashed border-meme-ink bg-meme-bg-2 p-2.5 px-3.5 font-mono text-[12px]">
 							<span>est. size</span>
@@ -209,7 +227,7 @@ export function ExportModal({
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
+			</DialogContent>
+		</Dialog>
 	)
 }

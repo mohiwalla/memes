@@ -91,6 +91,8 @@ const getSearchEntry = (name: string): SearchEntry => {
 	return entry
 }
 
+export const getTagsForMeme = (name: string) => TAGS_DATABASE[name] ?? []
+
 export function searchMemes(images: string[], query: string) {
 	const normalizedQuery = normalizeSearchValue(query)
 	if (!normalizedQuery) return images
