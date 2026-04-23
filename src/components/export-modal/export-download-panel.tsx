@@ -43,12 +43,12 @@ export function ExportDownloadPanel({
 
 	return (
 		<div className="mt-auto">
-			<div className="flex justify-between rounded-xl border-2 border-dashed border-meme-ink bg-meme-bg-2 p-2.5 px-3.5 font-mono text-[12px]">
+			<div className="flex justify-between rounded-xl border-2 border-dashed border-meme-ink bg-meme-bg-2 p-2 px-3 font-mono text-[11px] md:p-2.5 md:px-3.5 md:text-[12px]">
 				<span>est. size</span>
-				<b className="text-[13px]">{estSize}</b>
+				<b className="text-[12px] md:text-[13px]">{estSize}</b>
 			</div>
 
-			<div className={cn("mt-3.5 flex flex-col gap-2")}>
+			<div className={cn("mt-3 flex flex-col gap-2 md:mt-3.5")}>
 				<button
 					ref={downloadButtonRef}
 					onClick={event => onDownload(getDownloadOrigin(event))}
@@ -56,7 +56,7 @@ export function ExportDownloadPanel({
 					aria-live="polite"
 					data-status={downloadStatus}
 					className={cn(
-						"meme-pressable relative flex w-full items-center justify-center overflow-hidden rounded-2xl border-[2.5px] border-meme-ink px-4 py-3.5 font-heading text-sm",
+						"meme-pressable relative flex w-full items-center justify-center overflow-hidden rounded-2xl border-[2.5px] border-meme-ink px-3 py-3 font-heading text-sm md:px-4 md:py-3.5",
 						"[--meme-shadow-rest:4px_5px_0_var(--color-meme-ink)] [--meme-shadow-hover:6px_8px_0_var(--color-meme-ink)]",
 						"bg-meme-accent text-white disabled:cursor-wait disabled:opacity-100",
 						isDownloading &&

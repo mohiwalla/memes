@@ -58,9 +58,9 @@ export function ExportModal({
 					isAnimated={isGif}
 				/>
 
-				<div className="flex flex-col overflow-auto p-7 pt-7 pb-6 md:max-h-[92vh]">
-					<DialogHeader className="mb-5 gap-1">
-						<DialogTitle className="font-heading text-[28px] leading-tight tracking-tight text-meme-ink">
+				<div className="flex flex-col overflow-auto p-3 pt-3 pb-4 md:p-7 md:pt-7 md:pb-6">
+					<DialogHeader className="mb-3 gap-1 md:mb-5">
+						<DialogTitle className="font-heading text-lg leading-tight tracking-tight text-meme-ink md:text-[28px]">
 							Export
 						</DialogTitle>
 					</DialogHeader>

@@ -31,7 +31,7 @@ const SIZE_OPTIONS = [
 
 function SectionLabel({ children }: { children: string }) {
 	return (
-		<div className="mb-2.5 font-mono text-[10px] font-semibold uppercase tracking-[.14em] text-meme-ink-2">
+		<div className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[.14em] text-meme-ink-2 md:mb-2.5">
 			{children}
 		</div>
 	)
@@ -42,7 +42,7 @@ function FormatSelector({
 	setFmt,
 }: Pick<ExportOptionsProps, "fmt" | "setFmt">) {
 	return (
-		<div className="mb-5">
+		<div className="mb-4 md:mb-5">
 			<SectionLabel>Format</SectionLabel>
 			<div className="grid grid-cols-3 gap-2">
 				{FORMAT_OPTIONS.map(({ value, label }) => (
@@ -50,7 +50,7 @@ function FormatSelector({
 						key={value}
 						onClick={() => setFmt(value)}
 						className={cn(
-							"meme-pressable [--meme-shadow-active:2px_2px_0_var(--color-meme-ink)] flex flex-col items-center rounded-xl border-2 border-meme-ink bg-meme-paper py-3.5 px-1.5",
+							"meme-pressable [--meme-shadow-active:2px_2px_0_var(--color-meme-ink)] flex flex-col items-center rounded-xl border-2 border-meme-ink bg-meme-paper py-2.5 px-1.5 md:py-3.5",
 							fmt === value
 								? "[--meme-shadow-rest:3px_3px_0_var(--color-meme-ink)] [--meme-shadow-hover:5px_5px_0_var(--color-meme-ink)] bg-meme-accent text-white"
 								: "[--meme-shadow-rest:0_0_0_transparent] [--meme-shadow-hover:3px_4px_0_var(--color-meme-ink)]",
@@ -80,7 +80,7 @@ function SizeSelector({
 	}
 
 	return (
-		<div className="mb-5">
+		<div className="mb-4 md:mb-5">
 			<SectionLabel>Size</SectionLabel>
 			<div className="flex flex-wrap gap-1.5">
 				{SIZE_OPTIONS.map(({ value, label }) => (
