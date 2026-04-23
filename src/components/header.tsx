@@ -211,14 +211,14 @@ export function Header({
 	}, [])
 
 	return (
-		<header className="relative z-10 px-6 pt-9 pb-4 sm:px-12">
-			<div className="flex flex-wrap items-center justify-between gap-5">
-				<div className="flex items-center gap-2.5 font-heading">
-					<div className="relative size-13 shrink-0 -rotate-8 rounded-[50%_50%_50%_18%] border-3 border-meme-ink bg-meme-accent shadow-[5px_5px_0_var(--color-meme-ink)] scale-80">
+		<header className="meme-header-shell relative z-10">
+			<div className="meme-header-bar flex flex-wrap items-center justify-between gap-5">
+				<div className="meme-header-brand flex items-center gap-2.5 font-heading">
+					<div className="meme-header-brand-mark relative size-13 shrink-0 -rotate-8 rounded-[50%_50%_50%_18%] border-3 border-meme-ink bg-meme-accent shadow-[5px_5px_0_var(--color-meme-ink)] scale-80">
 						<div className="absolute top-4 left-3 size-2.25 rounded-full bg-meme-ink" />
 						<div className="absolute top-4 right-3 size-2.25 rounded-full bg-meme-ink" />
 					</div>
-					<div className="text-[34px] leading-none tracking-tight">
+					<div className="meme-header-brand-title text-[34px] leading-none tracking-tight">
 						MEME
 						<span className="text-meme-accent [-webkit-text-stroke:2px_var(--color-meme-ink)]">
 							STASH
@@ -226,8 +226,8 @@ export function Header({
 					</div>
 				</div>
 
-				<div className="flex flex-wrap items-center gap-2.5">
-					<div className="relative flex items-center">
+				<div className="meme-header-actions flex flex-wrap items-center gap-2.5">
+					<div className="meme-header-search relative flex items-center">
 						<div className="absolute left-3.5 flex items-center justify-center">
 							<div className="relative flex items-center justify-center">
 								<Search
@@ -237,7 +237,7 @@ export function Header({
 							</div>
 						</div>
 
-						<div className="absolute top-1/2 -mt-px -translate-1/2 -right-1 flex min-w-6 h-6 items-center justify-center rounded-full border-2 border-meme-ink bg-meme-accent px-1.5 font-sans text-[11px] font-bold text-meme-ink shadow-[2px_2px_0_var(--color-meme-ink)]">
+						<div className="meme-header-search-count absolute top-1/2 -mt-px -translate-1/2 -right-1 flex min-w-6 h-6 items-center justify-center rounded-full border-2 border-meme-ink bg-meme-accent px-1.5 font-sans text-[11px] font-bold text-meme-ink shadow-[2px_2px_0_var(--color-meme-ink)]">
 							{filteredCount}
 						</div>
 
@@ -248,13 +248,13 @@ export function Header({
 							aria-label="Search memes"
 							value={search}
 							onChange={e => onSearchChange(e.target.value)}
-							className="w-55 sm:w-77.5 rounded-full border-[2.5px] border-meme-ink bg-meme-paper pl-9 pr-12 py-2.5 font-sans text-sm font-medium text-meme-ink outline-none shadow-[3px_3px_0_var(--color-meme-ink)] transition-all focus:shadow-[5px_5px_0_var(--color-meme-accent)] placeholder:text-meme-ink-2"
+							className="meme-header-search-input rounded-full border-[2.5px] border-meme-ink bg-meme-paper py-2.5 pr-12 pl-9 font-sans text-sm font-medium text-meme-ink outline-none shadow-[3px_3px_0_var(--color-meme-ink)] transition-all placeholder:text-meme-ink-2 focus:shadow-[5px_5px_0_var(--color-meme-accent)]"
 						/>
 					</div>
 
 					<Button
 						variant="outline"
-						className="shrink-0 gap-2.5 border-2 px-5! py-4.75 hover:bg-meme-accent2"
+						className="meme-header-github shrink-0 gap-2.5 border-2 px-5! py-4.75 hover:bg-meme-accent2"
 						nativeButton={false}
 						render={
 							<a
@@ -273,7 +273,7 @@ export function Header({
 				</div>
 			</div>
 
-			<div className="mt-5 overflow-hidden whitespace-nowrap rounded-full border-2 border-meme-ink bg-meme-ink py-3 font-heading text-sm tracking-widest text-meme-accent2 shadow-[4px_4px_0_var(--color-meme-ink)] -rotate-1">
+			<div className="meme-header-ribbon mt-5 overflow-hidden whitespace-nowrap rounded-full border-2 border-meme-ink bg-meme-ink py-3 font-heading text-sm tracking-widest text-meme-accent2 shadow-[4px_4px_0_var(--color-meme-ink)] -rotate-1">
 				<div className="inline-block animate-ribbon">
 					<span>
 						✦ MEME STASH ✦ CLICK TO EXPORT ✦ SCROLL FOR MORE ✦ MEME

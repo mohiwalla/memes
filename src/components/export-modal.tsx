@@ -54,7 +54,6 @@ export function ExportModal({
 				variant="meme"
 				className="gap-0 p-0"
 				showCloseButton
-				initialFocus={downloadButtonRef}
 			>
 				<ExportPreview
 					selectedMeme={selectedMeme}
@@ -62,7 +61,7 @@ export function ExportModal({
 					isAnimated={isGif}
 				/>
 
-				<div className="flex flex-col overflow-auto p-7 pt-7 pb-6 md:max-h-[92vh]">
+				<div className="meme-export-sidebar flex flex-col overflow-auto p-7 pt-7 pb-6 md:max-h-[92vh]">
 					<DialogHeader className="mb-5 gap-1">
 						<DialogTitle className="font-heading text-[28px] leading-tight tracking-tight text-meme-ink">
 							Export

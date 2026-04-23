@@ -29,7 +29,7 @@ const dialogContentVariants = cva(
 			variant: {
 				default:
 					"top-1/2 left-1/2 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 sm:max-w-sm",
-				meme: "top-1/2 left-1/2 grid max-h-[92vh] w-full max-w-[1060px] -translate-x-1/2 -translate-y-1/2 grid-cols-1 overflow-hidden rounded-[28px] border-3 border-meme-ink bg-meme-paper text-sm text-meme-ink shadow-[10px_10px_0_var(--color-meme-ink)] md:grid-cols-[1.1fr_1fr]",
+				meme: "meme-dialog-content grid w-full grid-cols-1 rounded-[28px] border-3 border-meme-ink bg-meme-paper text-sm text-meme-ink shadow-[10px_10px_0_var(--color-meme-ink)] md:grid-cols-[1.1fr_1fr] md:overflow-hidden",
 			},
 		},
 		defaultVariants: {
@@ -93,7 +93,7 @@ function DialogContent({
 					(variant === "meme" ? (
 						<DialogPrimitive.Close
 							data-slot="dialog-close"
-							className="meme-pressable [--meme-shadow-rest:3px_3px_0_var(--color-meme-ink)] [--meme-shadow-hover:5px_5px_0_var(--color-meme-ink)] absolute top-3.5 right-3.5 z-10 flex size-10 items-center justify-center rounded-full border-2 border-meme-ink bg-meme-paper font-bold text-meme-ink hover:bg-meme-accent hover:text-meme-paper focus-visible:border-meme-accent focus-visible:ring-0"
+							className="meme-dialog-close meme-pressable [--meme-shadow-rest:3px_3px_0_var(--color-meme-ink)] [--meme-shadow-hover:5px_5px_0_var(--color-meme-ink)] absolute top-3.5 right-3.5 z-10 flex size-10 items-center justify-center rounded-full border-2 border-meme-ink bg-meme-paper font-bold text-meme-ink hover:bg-meme-accent hover:text-meme-paper focus-visible:border-meme-accent focus-visible:ring-0"
 						>
 							<XIcon />
 							<span className="sr-only">Close</span>
