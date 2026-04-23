@@ -70,7 +70,7 @@ export function Header({
 	}, [isApplePlatform])
 
 	return (
-		<header className="relative z-10 px-6 pt-9 pb-4 sm:px-12">
+		<header className="sticky top-0 z-20 bg-meme-bg px-6 pt-9 pb-4 sm:px-12 border-b-2 border-meme-ink/15 rounded-b-2xl">
 			<div className="flex flex-wrap items-center justify-between gap-5">
 				<div className="flex items-center gap-3.5 font-heading">
 					<div className="relative h-13 w-13 shrink-0 -rotate-8 rounded-[50%_50%_50%_18%] border-3 border-meme-ink bg-meme-accent shadow-[5px_5px_0_var(--color-meme-ink)]">
