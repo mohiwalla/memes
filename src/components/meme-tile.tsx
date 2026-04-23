@@ -20,7 +20,7 @@ export function MemeTile({
 
 	return (
 		<button
-			className="group relative block w-full animate-tile-in rounded-meme border-[2.5px] border-meme-ink bg-meme-paper p-2.5 pb-0 text-left shadow-[5px_5px_0_var(--color-meme-ink)] transition-all hover:z-3 hover:scale-[1.015] hover:-translate-y-1.25 hover:-translate-x-0.75 hover:shadow-[10px_12px_0_var(--color-meme-ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_var(--color-meme-ink)]"
+			className="group relative block w-full animate-tile-in rounded-meme border-[2.5px] border-meme-ink bg-meme-paper p-2 pb-0 text-left shadow-[5px_5px_0_var(--color-meme-ink)] transition-all hover:z-3 hover:scale-[1.015] hover:-translate-y-1.25 hover:-translate-x-0.75 hover:shadow-[10px_12px_0_var(--color-meme-ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_var(--color-meme-ink)] sm:p-2.5"
 			onClick={onClick}
 		>
 			<div
@@ -53,7 +53,7 @@ export function MemeTile({
 				/>
 				<span
 					className={cn(
-						"absolute top-2 right-2 rotate-6 rounded-full border-2 border-meme-ink px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-meme-ink",
+						"absolute top-1.5 right-1.5 rotate-6 rounded-full border-2 border-meme-ink px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-meme-ink sm:top-2 sm:right-2 sm:px-2.5 sm:py-1 sm:text-[10px]",
 						ext === "gif" && "bg-meme-accent",
 						ext === "png" && "bg-[#4CC9F0]",
 						ext === "webp" && "bg-[#7CFF6B]",
@@ -63,7 +63,7 @@ export function MemeTile({
 					{ext}
 				</span>
 			</div>
-			<div className="overflow-hidden text-ellipsis whitespace-nowrap p-3 px-1 text-[13px] font-semibold tracking-tight">
+			<div className="overflow-hidden text-ellipsis whitespace-nowrap p-2 px-1 text-[11px] font-semibold tracking-tight sm:p-3 sm:px-1 sm:text-[13px]">
 				{makeTitle(name)}
 			</div>
 		</button>

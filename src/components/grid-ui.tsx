@@ -283,14 +283,14 @@ export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
 	)
 
 	return (
-		<main className="relative z-0 px-6 pt-8 pb-20 sm:px-12">
+		<main className="relative z-0 px-4 pt-6 pb-16 sm:px-6 sm:pt-8 sm:pb-20 md:px-12">
 			<div
 				ref={containerRef}
 				className="relative"
 				style={{ height: `${gridHeight}px` }}
 			>
 				<div
-					className="absolute right-0 left-0 grid gap-5.5"
+					className="absolute right-0 left-0 grid gap-3 sm:gap-4 md:gap-5.5"
 					style={{
 						gridTemplateColumns: `repeat(${safeCols}, 1fr)`,
 						transform: `translateY(${offsetY}px)`,

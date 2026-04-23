@@ -11,8 +11,8 @@ export function ExportTags({ selectedMeme, onTagClick }: ExportTagsProps) {
 	const tags = getTagsForMeme(selectedMeme)
 
 	return (
-		<div className="mb-5">
-			<div className="mb-2.5 font-mono text-[10px] font-semibold uppercase tracking-[.14em] text-meme-ink-2">
+		<div className="mb-4 md:mb-5">
+			<div className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[.14em] text-meme-ink-2 md:mb-2.5">
 				Tags
 			</div>
 			{tags.length ? (
