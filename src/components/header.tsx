@@ -15,7 +15,35 @@ type HomeHeaderProps = {
 	search: string
 	onSearchChange: (q: string) => void
 	filteredCount: number
+	isSearchHotkeyEnabled?: boolean
 }
+
+const isEditableElement = (element: EventTarget | null) => {
+	if (
+		!(element instanceof HTMLInputElement) &&
+		!(element instanceof HTMLTextAreaElement) &&
+		!(element instanceof HTMLSelectElement) &&
+		!(element instanceof HTMLElement)
+	) {
+		return false
+	}
+
+	if (element instanceof HTMLElement && element.isContentEditable) {
+		return true
+	}
+
+	return (
+		element instanceof HTMLInputElement ||
+		element instanceof HTMLTextAreaElement ||
+		element instanceof HTMLSelectElement
+	)
+}
+
+const isPlainTypingKey = (event: KeyboardEvent) =>
+	event.key.length === 1 &&
+	!event.ctrlKey &&
+	!event.metaKey &&
+	!event.altKey
 
 const getIsApplePlatform = () => {
 	if (typeof navigator === "undefined") return false
@@ -81,6 +109,7 @@ export function Header({
 	search,
 	onSearchChange,
 	filteredCount,
+	isSearchHotkeyEnabled = true,
 }: HomeHeaderProps) {
 	const searchRef = useRef<HTMLInputElement>(null)
 	const [repoStars, setRepoStars] = useState<number | null>(
@@ -95,6 +124,10 @@ export function Header({
 	const focusSearch = useEffectEvent(() => {
 		searchRef.current?.focus()
 		searchRef.current?.select()
+	})
+	const startSearchFromTyping = useEffectEvent((value: string) => {
+		searchRef.current?.focus()
+		onSearchChange(value)
 	})
 	const clearOrBlurSearch = useEffectEvent(() => {
 		if (search) {
@@ -119,6 +152,8 @@ export function Header({
 				return
 			}
 
+			if (!isSearchHotkeyEnabled) return
+
 			if (
 				usesSearchShortcut &&
 				!event.altKey &&
@@ -127,12 +162,22 @@ export function Header({
 			) {
 				event.preventDefault()
 				focusSearch()
+				return
+			}
+
+			if (
+				document.activeElement !== searchRef.current &&
+				isPlainTypingKey(event) &&
+				!isEditableElement(event.target)
+			) {
+				event.preventDefault()
+				startSearchFromTyping(event.key)
 			}
 		}
 
 		window.addEventListener("keydown", onKeyDown)
 		return () => window.removeEventListener("keydown", onKeyDown)
-	}, [isApplePlatform])
+	}, [isApplePlatform, isSearchHotkeyEnabled])
 
 	useEffect(() => {
 		const cachedRepoStars = readRepoStarsCache()

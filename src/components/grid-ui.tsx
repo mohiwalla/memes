@@ -212,7 +212,8 @@ export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
 				Math.max(
 					0,
 					(speed - REGULAR_SCROLL_SPEED_PX_PER_MS) /
-						(MAX_SCROLL_SPEED_PX_PER_MS - REGULAR_SCROLL_SPEED_PX_PER_MS),
+						(MAX_SCROLL_SPEED_PX_PER_MS -
+							REGULAR_SCROLL_SPEED_PX_PER_MS),
 				),
 			)
 
@@ -307,12 +308,12 @@ export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
 								ref={index === 0 ? measureRef : undefined}
 								custom={animateResultChange}
 								variants={cardMotionVariants}
-								initial={
-									animateResultChange ? "hidden" : false
-								}
+								initial={animateResultChange ? "hidden" : false}
 								animate="visible"
 								exit="exit"
-								layout={animateResultChange ? "position" : false}
+								layout={
+									animateResultChange ? "position" : false
+								}
 								transition={
 									animateResultChange
 										? {
@@ -367,9 +368,16 @@ export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
 						}
 						className="py-20 text-center text-meme-ink-2"
 					>
-						<div className="mb-3 text-5xl">🔍</div>
+						<div className="flex justify-center">
+							<img
+								draggable="false"
+								src="/images/404.png"
+								className="w-80 -mb-10"
+							/>
+						</div>
+
 						<p className="text-base">
-							no memes match <b>"{search}"</b>
+							No match found for <b>"{search}"</b>
 						</p>
 					</motion.div>
 				)}

@@ -21,6 +21,7 @@ export default function HomePage() {
 				search={search}
 				onSearchChange={handleSearchChange}
 				filteredCount={filteredImages.length}
+				isSearchHotkeyEnabled={!selectedMeme}
 			/>
 
 			<GridUI

@@ -48,7 +48,7 @@ export function ExportDownloadPanel({
 	return (
 		<div className="mt-auto">
 			<div className="flex justify-between rounded-xl border-2 border-dashed border-meme-ink bg-meme-bg-2 p-2.5 px-3.5 font-mono text-[12px]">
-				<span>est. size</span>
+				<span>Est. size</span>
 				<b className="text-[13px]">{estSize}</b>
 			</div>
 
