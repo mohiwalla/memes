@@ -1,28 +1,45 @@
 import type { Dims, MemeFormat, SizePreset } from "@/types"
 
 export const isGifFile = (name: string) => name.toLowerCase().endsWith(".gif")
+export const DEFAULT_EXPORT_QUALITY = 92
+
+export const formatBytes = (bytes: number) => {
+	if (!Number.isFinite(bytes) || bytes <= 0) return "—"
+
+	const units = ["B", "KB", "MB", "GB"] as const
+	let value = bytes
+	let unitIndex = 0
+
+	while (value >= 1024 && unitIndex < units.length - 1) {
+		value /= 1024
+		unitIndex += 1
+	}
+
+	if (unitIndex === 0) return `${bytes} ${units[unitIndex]}`
+
+	return `${value >= 10 ? value.toFixed(0) : value.toFixed(1)} ${units[unitIndex]}`
+}
+
+const scaleDims = (natW: number, natH: number, scale: number) => ({
+	w: Math.max(1, Math.round(natW * scale)),
+	h: Math.max(1, Math.round(natH * scale)),
+})
 
 export const getDimsForPreset = (
 	preset: SizePreset,
 	natW: number,
 	natH: number,
 ) => {
-	const aspect = natW / natH
-
-	if (preset === "sm") {
-		return { w: 240, h: Math.round(240 / aspect) }
+	if (preset === "emoji") {
+		return { w: 50, h: 50 }
 	}
 
-	if (preset === "md") {
-		return { w: 480, h: Math.round(480 / aspect) }
+	if (preset === "small") {
+		return scaleDims(natW, natH, 0.25)
 	}
 
-	if (preset === "lg") {
-		return { w: 800, h: Math.round(800 / aspect) }
-	}
-
-	if (preset === "sq") {
-		return { w: 512, h: 512 }
+	if (preset === "medium") {
+		return scaleDims(natW, natH, 0.5)
 	}
 
 	return { w: natW, h: natH }
@@ -42,7 +59,7 @@ export const getEstimatedExportSize = (
 	quality: number,
 ) => {
 	if (!w || !h || fmt === "gif") {
-		return fmt === "gif" ? "original" : "—"
+		return "—"
 	}
 
 	const px = w * h

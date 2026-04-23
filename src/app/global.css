@@ -24,6 +24,9 @@
 	--animate-tile-in: tile-in 0.3s ease both;
 	--animate-bounce-meme: bounce-meme 0.55s infinite alternate;
 	--animate-shimmer: shimmer 1.4s infinite;
+	--animate-download-working: download-working 0.8s ease-in-out infinite;
+	--animate-download-pop: download-pop 0.45s cubic-bezier(0.2, 1.4, 0.3, 1)
+		both;
 
 	@keyframes ribbon {
 		to {
@@ -56,7 +59,28 @@
 			background-position: -200% 0;
 		}
 	}
-
+	@keyframes download-working {
+		0%,
+		100% {
+			transform: translate(0, 0) scale(1);
+			box-shadow: 4px 5px 0 var(--color-meme-ink);
+		}
+		50% {
+			transform: translate(-1px, -1px) scale(1.015);
+			box-shadow: 6px 7px 0 var(--color-meme-ink);
+		}
+	}
+	@keyframes download-pop {
+		0% {
+			transform: scale(0.96) rotate(-1deg);
+		}
+		55% {
+			transform: scale(1.04) rotate(1deg);
+		}
+		100% {
+			transform: scale(1) rotate(0deg);
+		}
+	}
 	/* Keep shadcn/base variables */
 	--color-sidebar-ring: var(--sidebar-ring);
 	--color-sidebar-border: var(--sidebar-border);

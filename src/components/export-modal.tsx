@@ -1,3 +1,4 @@
+import { useRef } from "react"
 import {
 	Dialog,
 	DialogContent,
@@ -9,21 +10,20 @@ import { ExportOptions } from "@/components/export-modal/export-options"
 import { ExportPreview } from "@/components/export-modal/export-preview"
 import { ExportTags } from "@/components/export-modal/export-tags"
 import { isGifFile } from "@/lib/meme-export"
-import type { Dims, MemeFormat, SizePreset } from "@/types"
+import type { Dims, DownloadOrigin, MemeFormat, SizePreset } from "@/types"
 
 export type ExportModalProps = {
 	selectedMeme: string
 	onClose: () => void
 	fmt: MemeFormat
 	setFmt: (f: MemeFormat) => void
-	quality: number
-	setQuality: (q: number) => void
 	preset: SizePreset
 	setPreset: (p: SizePreset) => void
 	dims: Dims
 	estSize: string
 	isDownloading: boolean
-	onDownload: () => void
+	downloadStatus: "idle" | "rendering" | "success"
+	onDownload: (origin: DownloadOrigin) => void
 	onTagClick: (tag: string) => void
 }
 
@@ -32,21 +32,26 @@ export function ExportModal({
 	onClose,
 	fmt,
 	setFmt,
-	quality,
-	setQuality,
 	preset,
 	setPreset,
 	dims,
 	estSize,
 	isDownloading,
+	downloadStatus,
 	onDownload,
 	onTagClick,
 }: ExportModalProps) {
 	const isGif = isGifFile(selectedMeme)
+	const downloadButtonRef = useRef<HTMLButtonElement>(null)
 
 	return (
 		<Dialog open onOpenChange={open => !open && onClose()}>
-			<DialogContent variant="meme" className="gap-0 p-0" showCloseButton>
+			<DialogContent
+				variant="meme"
+				className="gap-0 p-0"
+				showCloseButton
+				initialFocus={downloadButtonRef}
+			>
 				<ExportPreview
 					selectedMeme={selectedMeme}
 					dims={dims}
@@ -63,8 +68,6 @@ export function ExportModal({
 					<ExportOptions
 						fmt={fmt}
 						setFmt={setFmt}
-						quality={quality}
-						setQuality={setQuality}
 						preset={preset}
 						setPreset={setPreset}
 						dims={dims}
@@ -77,8 +80,10 @@ export function ExportModal({
 					/>
 
 					<ExportDownloadPanel
+						downloadButtonRef={downloadButtonRef}
 						estSize={estSize}
 						isDownloading={isDownloading}
+						downloadStatus={downloadStatus}
 						onDownload={onDownload}
 					/>
 				</div>
