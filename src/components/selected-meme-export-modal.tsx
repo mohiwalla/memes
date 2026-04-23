@@ -9,7 +9,13 @@ import {
 	getExportDims,
 	isGifFile,
 } from "@/lib/meme-export"
-import { getAssetUrl, loadImg, triggerDownload } from "@/lib/utils"
+import {
+	downloadFile,
+	getAssetUrl,
+	loadImg,
+	makeTitle,
+	triggerDownload,
+} from "@/lib/utils"
 import type { Dims, DownloadOrigin, MemeFormat, SizePreset } from "@/types"
 
 type SelectedMemeExportModalProps = {
@@ -18,7 +24,8 @@ type SelectedMemeExportModalProps = {
 	onTagClick: (tag: string) => void
 }
 
-const MIME_BY_FORMAT: Record<Exclude<MemeFormat, "gif">, string> = {
+const MIME_BY_FORMAT: Record<MemeFormat, string> = {
+	gif: "image/gif",
 	png: "image/png",
 	jpg: "image/jpeg",
 	webp: "image/webp",
@@ -59,6 +66,25 @@ export function SelectedMemeExportModal({
 	const [sourceFileSize, setSourceFileSize] = useState("—")
 	const successTimerRef = useRef<number | null>(null)
 	const selectedMemeUrl = getAssetUrl(selectedMeme)
+	const canShare =
+		typeof navigator !== "undefined" &&
+		typeof navigator.share === "function" &&
+		typeof File === "function" &&
+		(() => {
+			if (typeof navigator.canShare !== "function") return true
+
+			try {
+				return navigator.canShare({
+					files: [
+						new File([""], `share.${fmt}`, {
+							type: MIME_BY_FORMAT[fmt],
+						}),
+					],
+				})
+			} catch {
+				return false
+			}
+		})()
 	const exportDims = getExportDims(preset, dims)
 	const estSize =
 		fmt === "gif"
@@ -157,6 +183,32 @@ export function SelectedMemeExportModal({
 		return canvas
 	}
 
+	const getExportFilename = () =>
+		fmt === "gif"
+			? selectedMeme
+			: `${selectedMeme.replace(/\.[^.]+$/, "")}.${fmt}`
+
+	const createExportBlob = async () => {
+		if (fmt === "gif") {
+			const response = await fetch(selectedMemeUrl)
+			if (!response.ok) {
+				throw new Error(`Failed to load share file: ${response.status}`)
+			}
+
+			return response.blob()
+		}
+
+		const canvas = await renderCanvas()
+		if (!canvas) return null
+
+		const q =
+			fmt === "jpg" || fmt === "webp"
+				? DEFAULT_EXPORT_QUALITY / 100
+				: undefined
+
+		return canvasToBlob(canvas, MIME_BY_FORMAT[fmt], q)
+	}
+
 	const showDownloadSuccess = (origin: DownloadOrigin) => {
 		if (successTimerRef.current) {
 			window.clearTimeout(successTimerRef.current)
@@ -184,26 +236,16 @@ export function SelectedMemeExportModal({
 
 		try {
 			if (fmt === "gif") {
-				triggerDownload(selectedMemeUrl, selectedMeme)
+				await downloadFile(selectedMemeUrl, selectedMeme)
 				didDownload = true
 				return
 			}
 
-			const canvas = await renderCanvas()
-			if (!canvas) return
-
-			const q =
-				fmt === "jpg" || fmt === "webp"
-					? DEFAULT_EXPORT_QUALITY / 100
-					: undefined
-			const blob = await canvasToBlob(canvas, MIME_BY_FORMAT[fmt], q)
+			const blob = await createExportBlob()
 			if (!blob) return
 
 			const url = URL.createObjectURL(blob)
-			triggerDownload(
-				url,
-				selectedMeme.replace(/\.[^.]+$/, "") + "." + fmt,
-			)
+			triggerDownload(url, getExportFilename())
 			didDownload = true
 			setTimeout(() => URL.revokeObjectURL(url), 3000)
 		} catch (error) {
@@ -214,6 +256,40 @@ export function SelectedMemeExportModal({
 			} else {
 				setDownloadStatus("idle")
 			}
+		}
+	}
+
+	const handleShare = async () => {
+		if (!canShare || isDownloading) return
+
+		try {
+			const blob = await createExportBlob()
+			if (!blob) return
+
+			const file = new File([blob], getExportFilename(), {
+				type: blob.type || MIME_BY_FORMAT[fmt],
+			})
+
+			if (
+				typeof navigator.canShare === "function" &&
+				!navigator.canShare({ files: [file] })
+			) {
+				return
+			}
+
+			await navigator.share({
+				title: makeTitle(selectedMeme),
+				files: [file],
+			})
+		} catch (error) {
+			if (
+				error instanceof DOMException &&
+				error.name === "AbortError"
+			) {
+				return
+			}
+
+			console.error("Failed to share meme", error)
 		}
 	}
 
@@ -229,7 +305,9 @@ export function SelectedMemeExportModal({
 			estSize={estSize}
 			isDownloading={isDownloading}
 			downloadStatus={downloadStatus}
+			canShare={canShare}
 			onDownload={handleDownload}
+			onShare={handleShare}
 			onTagClick={onTagClick}
 		/>
 	)

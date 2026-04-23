@@ -45,6 +45,22 @@ export const triggerDownload = (href: string, filename: string) => {
 	document.body.removeChild(a)
 }
 
+export const downloadFile = async (href: string, filename: string) => {
+	const response = await fetch(href)
+	if (!response.ok) {
+		throw new Error(`Failed to download file: ${response.status}`)
+	}
+
+	const blob = await response.blob()
+	const objectUrl = URL.createObjectURL(blob)
+
+	try {
+		triggerDownload(objectUrl, filename)
+	} finally {
+		window.setTimeout(() => URL.revokeObjectURL(objectUrl), 3000)
+	}
+}
+
 type SearchEntry = {
 	normalizedName: string
 	normalizedTitle: string

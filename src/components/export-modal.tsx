@@ -23,7 +23,9 @@ export type ExportModalProps = {
 	estSize: string
 	isDownloading: boolean
 	downloadStatus: "idle" | "rendering" | "success"
+	canShare: boolean
 	onDownload: (origin: DownloadOrigin) => void
+	onShare: () => void
 	onTagClick: (tag: string) => void
 }
 
@@ -38,7 +40,9 @@ export function ExportModal({
 	estSize,
 	isDownloading,
 	downloadStatus,
+	canShare,
 	onDownload,
+	onShare,
 	onTagClick,
 }: ExportModalProps) {
 	const isGif = isGifFile(selectedMeme)
@@ -84,7 +88,9 @@ export function ExportModal({
 						estSize={estSize}
 						isDownloading={isDownloading}
 						downloadStatus={downloadStatus}
+						canShare={canShare}
 						onDownload={onDownload}
+						onShare={onShare}
 					/>
 				</div>
 			</DialogContent>

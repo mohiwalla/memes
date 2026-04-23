@@ -1,5 +1,15 @@
-import { useEffect, useEffectEvent, useRef } from "react"
-import { Search, X } from "lucide-react"
+import { useEffect, useEffectEvent, useRef, useState } from "react"
+import { Github, Search, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
+const REPO_URL = "https://github.com/mohiwalla/memes"
+const REPO_API_URL = "https://api.github.com/repos/mohiwalla/memes"
+const REPO_STARS_CACHE_KEY = "meme-stash:repo-stars"
+const REPO_STARS_CACHE_TTL_MS = 60 * 60 * 1000
+const STAR_COUNT_FORMATTER = new Intl.NumberFormat("en-US", {
+	notation: "compact",
+	maximumFractionDigits: 1,
+})
 
 type HomeHeaderProps = {
 	search: string
@@ -19,14 +29,69 @@ const getIsApplePlatform = () => {
 	return /mac|iphone|ipad|ipod/i.test(platform)
 }
 
+type RepoStarsCache = {
+	stars: number
+	fetchedAt: number
+}
+
+const readRepoStarsCache = (): RepoStarsCache | null => {
+	if (typeof window === "undefined") return null
+
+	try {
+		const rawCache = window.localStorage.getItem(REPO_STARS_CACHE_KEY)
+		if (!rawCache) return null
+
+		const parsedCache = JSON.parse(rawCache) as Partial<RepoStarsCache>
+		if (
+			typeof parsedCache.stars !== "number" ||
+			typeof parsedCache.fetchedAt !== "number"
+		) {
+			window.localStorage.removeItem(REPO_STARS_CACHE_KEY)
+			return null
+		}
+
+		if (Date.now() - parsedCache.fetchedAt > REPO_STARS_CACHE_TTL_MS) {
+			window.localStorage.removeItem(REPO_STARS_CACHE_KEY)
+			return null
+		}
+
+		return {
+			stars: parsedCache.stars,
+			fetchedAt: parsedCache.fetchedAt,
+		}
+	} catch {
+		window.localStorage.removeItem(REPO_STARS_CACHE_KEY)
+		return null
+	}
+}
+
+const writeRepoStarsCache = (stars: number) => {
+	if (typeof window === "undefined") return
+
+	window.localStorage.setItem(
+		REPO_STARS_CACHE_KEY,
+		JSON.stringify({
+			stars,
+			fetchedAt: Date.now(),
+		} satisfies RepoStarsCache),
+	)
+}
+
 export function Header({
 	search,
 	onSearchChange,
 	filteredCount,
 }: HomeHeaderProps) {
 	const searchRef = useRef<HTMLInputElement>(null)
+	const [repoStars, setRepoStars] = useState<number | null>(
+		() => readRepoStarsCache()?.stars ?? null,
+	)
 	const isApplePlatform = getIsApplePlatform()
 	const shortcutLabel = isApplePlatform ? "⌘K" : "Ctrl+K"
+	const repoStarsLabel =
+		repoStars === null
+			? "..."
+			: `${STAR_COUNT_FORMATTER.format(repoStars)} stars`
 	const focusSearch = useEffectEvent(() => {
 		searchRef.current?.focus()
 		searchRef.current?.select()
@@ -69,6 +134,40 @@ export function Header({
 		return () => window.removeEventListener("keydown", onKeyDown)
 	}, [isApplePlatform])
 
+	useEffect(() => {
+		const cachedRepoStars = readRepoStarsCache()
+		if (cachedRepoStars) return
+
+		const controller = new AbortController()
+
+		void fetch(REPO_API_URL, {
+			signal: controller.signal,
+			headers: {
+				Accept: "application/vnd.github+json",
+			},
+		})
+			.then(response => {
+				if (!response.ok) throw new Error("Failed to fetch repo stars")
+				return response.json() as Promise<{ stargazers_count?: number }>
+			})
+			.then(data => {
+				if (typeof data.stargazers_count === "number") {
+					setRepoStars(data.stargazers_count)
+					writeRepoStarsCache(data.stargazers_count)
+				}
+			})
+			.catch(error => {
+				if (
+					error instanceof DOMException &&
+					error.name === "AbortError"
+				) {
+					return
+				}
+			})
+
+		return () => controller.abort()
+	}, [])
+
 	return (
 		<header className="relative z-10 px-6 pt-9 pb-4 sm:px-12">
 			<div className="flex flex-wrap items-center justify-between gap-5">
@@ -86,6 +185,26 @@ export function Header({
 				</div>
 
 				<div className="flex flex-wrap items-center gap-2.5">
+					<Button
+						variant="outline"
+						size="sm"
+						className="shrink-0"
+						nativeButton={false}
+						render={
+							<a
+								href={REPO_URL}
+								target="_blank"
+								rel="noreferrer"
+								aria-label={`Open GitHub repository, ${repoStarsLabel}`}
+							/>
+						}
+					>
+						<Github data-icon="inline-start" />
+						GitHub
+						<span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+							{repoStarsLabel}
+						</span>
+					</Button>
 					<div className="relative flex items-center">
 						<Search
 							className="absolute left-3 h-3.75 w-3.75 text-meme-ink-2 pointer-events-none"
@@ -94,7 +213,7 @@ export function Header({
 						<input
 							ref={searchRef}
 							type="text"
-							placeholder={`search memes... (${shortcutLabel})`}
+							placeholder={`Search memes... (${shortcutLabel})`}
 							aria-label="Search memes"
 							value={search}
 							onChange={e => onSearchChange(e.target.value)}
