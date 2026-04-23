@@ -1,5 +1,6 @@
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react"
+import { useEffect, useEffectEvent, useMemo, useRef } from "react"
 import { parseAsString, useQueryStates } from "nuqs"
+import { MEME_NAMES } from "@/lib/memes-database"
 import { searchMemes } from "@/lib/utils"
 
 const DOUBLE_ESCAPE_CLEAR_MS = 500
@@ -8,7 +9,6 @@ const getHistoryIndex = () =>
 	typeof window === "undefined" ? null : (window.history.state?.idx ?? null)
 
 export function useMemeBrowser() {
-	const [images, setImages] = useState<string[]>([])
 	const [{ search, selectedMeme }, setUrlState] = useQueryStates(
 		{
 			search: parseAsString.withDefault(""),
@@ -24,16 +24,9 @@ export function useMemeBrowser() {
 	const dismissibleModalHistoryEntriesRef = useRef(new Set<number>())
 	const lastEscapeAtRef = useRef(0)
 
-	useEffect(() => {
-		fetch("/list.json")
-			.then(res => res.json())
-			.then(data => setImages(data))
-			.catch(console.error)
-	}, [])
-
 	const filteredImages = useMemo(() => {
-		return searchMemes(images, search)
-	}, [images, search])
+		return searchMemes(MEME_NAMES, search)
+	}, [search])
 
 	const handleSearchChange = (value: string) => {
 		void setUrlState({ search: value || null })
@@ -106,10 +99,10 @@ export function useMemeBrowser() {
 	useEffect(() => {
 		if (!selectedMeme) return
 
-		if (images.length > 0 && !images.includes(selectedMeme)) {
+		if (!MEME_NAMES.includes(selectedMeme)) {
 			void setUrlState({ selectedMeme: null })
 		}
-	}, [images, selectedMeme, setUrlState])
+	}, [selectedMeme, setUrlState])
 
 	return {
 		filteredImages,

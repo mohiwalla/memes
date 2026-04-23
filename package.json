@@ -9,7 +9,6 @@
 		"lint": "eslint .",
 		"preview": "vite preview",
 		"prepare": "husky",
-		"static-list": "bun src/scripts/static-list.ts",
 		"format": "prettier --write ."
 	},
 	"dependencies": {

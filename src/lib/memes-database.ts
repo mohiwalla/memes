@@ -1585,3 +1585,5 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 		],
 	},
 }
+
+export const MEME_NAMES = Object.keys(MEMES_DATABASE)
