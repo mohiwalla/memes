@@ -1,13 +1,20 @@
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import { getExt, makeTitle } from "@/lib/utils"
+import { getAssetUrl, getExt, makeTitle } from "@/lib/utils"
 
 type MemeTileProps = {
 	name: string
+	loading?: "eager" | "lazy"
+	scrollBlurPx?: number
 	onClick: () => void
 }
 
-export function MemeTile({ name, onClick }: MemeTileProps) {
+export function MemeTile({
+	name,
+	loading = "lazy",
+	scrollBlurPx = 0,
+	onClick,
+}: MemeTileProps) {
 	const [loaded, setLoaded] = useState(false)
 	const ext = getExt(name)
 
@@ -24,14 +31,25 @@ export function MemeTile({ name, onClick }: MemeTileProps) {
 				)}
 			>
 				<img
-					src={`/assets/${name}`}
+					src={getAssetUrl(name)}
 					alt={makeTitle(name)}
+					loading={loading}
+					decoding="async"
 					onLoad={() => setLoaded(true)}
 					onError={() => setLoaded(true)}
 					className={cn(
-						"block h-full w-full object-contain transition-opacity duration-300",
-						loaded ? "opacity-100" : "opacity-0",
+						"block h-full w-full object-contain transition-[filter,opacity,transform] duration-200 ease-out will-change-[filter,opacity,transform] motion-reduce:transition-none",
+						loaded
+							? "scale-100 opacity-100"
+							: "scale-[1.03] opacity-0 blur-xl",
 					)}
+					style={{
+						filter:
+							loaded && scrollBlurPx
+								? `blur(${scrollBlurPx}px)`
+								: undefined,
+						transitionDuration: scrollBlurPx ? "40ms" : undefined,
+					}}
 				/>
 				<span
 					className={cn(

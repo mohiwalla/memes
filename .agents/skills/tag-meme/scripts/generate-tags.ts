@@ -21,6 +21,10 @@ type Options = {
 	applyAfterBatch: boolean
 }
 
+type MemeDatabaseEntry = {
+	tags?: string[]
+}
+
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 const parseArgs = (): Options => {
@@ -35,7 +39,7 @@ const parseArgs = (): Options => {
 		assetsDir: getArg("--assets-dir", "public/assets")!,
 		previewDir: getArg("--preview-dir", "tmp/tag-meme/previews")!,
 		aliasDir: getArg("--alias-dir", "tmp/tag-meme/previews-id")!,
-		dbPath: getArg("--db-path", "src/lib/tags-database.ts")!,
+		dbPath: getArg("--db-path", "src/lib/memes-database.ts")!,
 		outPath: getArg("--out-path", "tmp/tag-meme/tags.generated.json")!,
 		batchSize: Number(getArg("--batch-size", "6")),
 		limit: getArg("--limit") ? Number(getArg("--limit")) : undefined,
@@ -46,10 +50,13 @@ const parseArgs = (): Options => {
 
 const loadExistingDbKeys = (dbPath: string) =>
 	new Set(
-		Array.from(
-			readFileSync(dbPath, "utf8").matchAll(/"([^"]+)": \[/g),
-			match => match[1],
-		),
+		Object.entries(
+			Function(
+				`return ${readFileSync(dbPath, "utf8").split("export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = ")[1]}`,
+			)() as Record<string, MemeDatabaseEntry>,
+		)
+			.filter(([, entry]) => entry.tags?.length)
+			.map(([file]) => file),
 	)
 
 const loadCheckpoint = (path: string) => {
@@ -66,13 +73,12 @@ const extractJson = (text: string) => {
 }
 
 const options = parseArgs()
-const allAssets = readdirSync(options.assetsDir).sort((a, b) => a.localeCompare(b))
+const allAssets = readdirSync(options.assetsDir).sort((a, b) =>
+	a.localeCompare(b),
+)
 const existingDbKeys = loadExistingDbKeys(options.dbPath)
 const checkpoint = options.resume ? loadCheckpoint(options.outPath) : {}
-const doneKeys = new Set([
-	...existingDbKeys,
-	...Object.keys(checkpoint),
-])
+const doneKeys = new Set([...existingDbKeys, ...Object.keys(checkpoint)])
 
 let remaining = allAssets.filter(file => !doneKeys.has(file))
 if (options.limit) remaining = remaining.slice(0, options.limit)

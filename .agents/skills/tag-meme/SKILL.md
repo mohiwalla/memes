@@ -1,6 +1,6 @@
 ---
 name: tag-meme
-description: Tag meme assets and generate display titles by actual visual content, not filenames. Use when populating or updating `src/lib/tags-database.ts`, `src/lib/titles-database.ts`, classifying meme images/GIFs, or generating search labels for meme libraries. Workflow uses Bun scripts, GIF frame sheets, alias previews to hide filenames, and Gemini CLI for visual tagging and title generation.
+description: Tag meme assets and generate display titles by actual visual content, not filenames. Use when populating or updating `src/lib/memes-database.ts`, classifying meme images/GIFs, or generating search labels for meme libraries. Workflow uses Bun scripts, GIF frame sheets, alias previews to hide filenames, and Gemini CLI for visual tagging and title generation.
 ---
 
 # Tag Meme
@@ -30,8 +30,8 @@ Need:
    - likely meme search intent
 7. For titles, ask Gemini for concise Title Case UI labels from pixels only.
 8. Save batch checkpoints after every Gemini batch.
-9. Merge tags into `src/lib/tags-database.ts`, strip exact filler tags like `reaction`, sort keys.
-10. Merge titles into `src/lib/titles-database.ts`, strip generic words like `Meme`, `Reaction`, `Gif`.
+9. Merge tags into `src/lib/memes-database.ts`, strip exact filler tags like `reaction`, sort keys.
+10. Merge titles into `src/lib/memes-database.ts`, strip generic words like `Meme`, `Reaction`, `Gif`.
 11. Spot-check weird or high-risk entries with image viewer before finalizing.
 
 ## Files
@@ -105,8 +105,7 @@ Prompt must say:
 - Title alias PNGs: `tmp/tag-meme/title-previews-id/`
 - Generated checkpoint JSON: `tmp/tag-meme/tags.generated.json`
 - Generated titles JSON: `tmp/tag-meme/titles.generated.json`
-- Final database: `src/lib/tags-database.ts`
-- Final titles database: `src/lib/titles-database.ts`
+- Final database: `src/lib/memes-database.ts`
 
 ## When to inspect manually
 

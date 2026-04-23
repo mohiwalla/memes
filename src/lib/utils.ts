@@ -1,16 +1,28 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { MEMES_DATABASE } from "@/lib/memes-database"
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
 
+const DEFAULT_ASSET_BASE_URL = "/assets"
+
+const getAssetBaseUrl = () =>
+	(import.meta.env.VITE_CDN_URL?.trim() || DEFAULT_ASSET_BASE_URL).replace(
+		/\/+$/,
+		"",
+	)
+
+export const getAssetUrl = (name: string) =>
+	`${getAssetBaseUrl()}/${name.split("/").map(encodeURIComponent).join("/")}`
+
 export const makeTitle = (name: string) =>
-	(TITLES_DATABASE[name] ??
-		name
+	MEMES_DATABASE[name]?.title ??
+	name
 		.replace(/\.[^.]+$/, "")
 		.replace(/-/g, " ")
-		.replace(/\b\w/g, c => c.toUpperCase()))
+		.replace(/\b\w/g, c => c.toUpperCase())
 
 export const getExt = (name: string) =>
 	(name.match(/\.([^.]+)$/) || ["", ""])[1].toLowerCase()
@@ -32,9 +44,6 @@ export const triggerDownload = (href: string, filename: string) => {
 	a.click()
 	document.body.removeChild(a)
 }
-
-import { TAGS_DATABASE } from "@/lib/tags-database"
-import { TITLES_DATABASE } from "@/lib/titles-database"
 
 type SearchEntry = {
 	normalizedName: string
@@ -88,14 +97,16 @@ const getSearchEntry = (name: string): SearchEntry => {
 	const entry = {
 		normalizedName: normalizeSearchValue(name),
 		normalizedTitle: normalizeSearchValue(makeTitle(name)),
-		normalizedTags: (TAGS_DATABASE[name] ?? []).map(normalizeSearchValue),
+		normalizedTags: (MEMES_DATABASE[name]?.tags ?? []).map(
+			normalizeSearchValue,
+		),
 	}
 
 	searchEntryCache.set(name, entry)
 	return entry
 }
 
-export const getTagsForMeme = (name: string) => TAGS_DATABASE[name] ?? []
+export const getTagsForMeme = (name: string) => MEMES_DATABASE[name]?.tags ?? []
 
 export function searchMemes(images: string[], query: string) {
 	const normalizedQuery = normalizeSearchValue(query)
