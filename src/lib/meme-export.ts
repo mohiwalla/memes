@@ -1,3 +1,4 @@
+import { filesize } from "filesize"
 import type { Dims, MemeFormat, SizePreset } from "@/types"
 
 export const isGifFile = (name: string) => name.toLowerCase().endsWith(".gif")
@@ -6,18 +7,7 @@ export const DEFAULT_EXPORT_QUALITY = 92
 export const formatBytes = (bytes: number) => {
 	if (!Number.isFinite(bytes) || bytes <= 0) return "—"
 
-	const units = ["B", "KB", "MB", "GB"] as const
-	let value = bytes
-	let unitIndex = 0
-
-	while (value >= 1024 && unitIndex < units.length - 1) {
-		value /= 1024
-		unitIndex += 1
-	}
-
-	if (unitIndex === 0) return `${bytes} ${units[unitIndex]}`
-
-	return `${value >= 10 ? value.toFixed(0) : value.toFixed(1)} ${units[unitIndex]}`
+	return filesize(bytes, { standard: "iec" })
 }
 
 const scaleDims = (natW: number, natH: number, scale: number) => ({
@@ -31,7 +21,7 @@ export const getDimsForPreset = (
 	natH: number,
 ) => {
 	if (preset === "emoji") {
-		return { w: 50, h: 50 }
+		return { w: 50, h: Math.max(1, Math.round(50 / (natW / natH))) }
 	}
 
 	if (preset === "small") {

@@ -86,6 +86,7 @@ function SizeSelector({
 				{SIZE_OPTIONS.map(({ value, label }) => (
 					<Tooltip key={value}>
 						<TooltipTrigger
+							delay={20}
 							render={
 								<button
 									type="button"
