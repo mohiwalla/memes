@@ -1177,6 +1177,19 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"confident",
 		],
 	},
+	"relax-relax.gif": {
+		title: "Boys Relax",
+		tags: [
+			"boys relax",
+			"south indian movie",
+			"guns pointed",
+			"calm down",
+			"surrender",
+			"arms outstretched",
+			"surrounded",
+			"action scene",
+		],
+	},
 	"sarcastic-clap.gif": {
 		title: "Ken Doll Slow Clap",
 		tags: [
