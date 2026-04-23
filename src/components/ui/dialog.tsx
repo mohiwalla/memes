@@ -93,7 +93,7 @@ function DialogContent({
 					(variant === "meme" ? (
 						<DialogPrimitive.Close
 							data-slot="dialog-close"
-							className="absolute top-3.5 right-3.5 z-10 flex size-10 items-center justify-center rounded-full border-2 border-meme-ink bg-meme-paper font-bold text-meme-ink shadow-[3px_3px_0_var(--color-meme-ink)] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:bg-meme-accent hover:text-meme-paper hover:shadow-[5px_5px_0_var(--color-meme-ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_var(--color-meme-ink)] focus-visible:border-meme-accent focus-visible:ring-0"
+							className="meme-pressable [--meme-shadow-rest:3px_3px_0_var(--color-meme-ink)] [--meme-shadow-hover:5px_5px_0_var(--color-meme-ink)] absolute top-3.5 right-3.5 z-10 flex size-10 items-center justify-center rounded-full border-2 border-meme-ink bg-meme-paper font-bold text-meme-ink hover:bg-meme-accent hover:text-meme-paper focus-visible:border-meme-accent focus-visible:ring-0"
 						>
 							<XIcon />
 							<span className="sr-only">Close</span>

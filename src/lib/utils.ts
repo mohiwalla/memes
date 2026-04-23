@@ -6,10 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const makeTitle = (name: string) =>
-	name
+	(TITLES_DATABASE[name] ??
+		name
 		.replace(/\.[^.]+$/, "")
 		.replace(/-/g, " ")
-		.replace(/\b\w/g, c => c.toUpperCase())
+		.replace(/\b\w/g, c => c.toUpperCase()))
 
 export const getExt = (name: string) =>
 	(name.match(/\.([^.]+)$/) || ["", ""])[1].toLowerCase()
@@ -33,9 +34,11 @@ export const triggerDownload = (href: string, filename: string) => {
 }
 
 import { TAGS_DATABASE } from "@/lib/tags-database"
+import { TITLES_DATABASE } from "@/lib/titles-database"
 
 type SearchEntry = {
 	normalizedName: string
+	normalizedTitle: string
 	normalizedTags: string[]
 }
 
@@ -84,6 +87,7 @@ const getSearchEntry = (name: string): SearchEntry => {
 
 	const entry = {
 		normalizedName: normalizeSearchValue(name),
+		normalizedTitle: normalizeSearchValue(makeTitle(name)),
 		normalizedTags: (TAGS_DATABASE[name] ?? []).map(normalizeSearchValue),
 	}
 
@@ -102,7 +106,11 @@ export function searchMemes(images: string[], query: string) {
 	return images
 		.map(name => {
 			const entry = getSearchEntry(name)
-			const fields = [entry.normalizedName, ...entry.normalizedTags]
+			const fields = [
+				entry.normalizedName,
+				entry.normalizedTitle,
+				...entry.normalizedTags,
+			]
 
 			let score = 0
 			for (const token of tokens) {
@@ -116,10 +124,20 @@ export function searchMemes(images: string[], query: string) {
 				score += bestScore
 			}
 
-			if (entry.normalizedName === normalizedQuery) score += 240
-			else if (entry.normalizedName.startsWith(normalizedQuery))
+			if (
+				entry.normalizedName === normalizedQuery ||
+				entry.normalizedTitle === normalizedQuery
+			) {
+				score += 240
+			} else if (
+				entry.normalizedName.startsWith(normalizedQuery) ||
+				entry.normalizedTitle.startsWith(normalizedQuery)
+			)
 				score += 180
-			else if (entry.normalizedName.includes(normalizedQuery))
+			else if (
+				entry.normalizedName.includes(normalizedQuery) ||
+				entry.normalizedTitle.includes(normalizedQuery)
+			)
 				score += 120
 			else if (
 				entry.normalizedTags.some(

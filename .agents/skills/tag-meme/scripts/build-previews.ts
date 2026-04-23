@@ -1,5 +1,5 @@
 import { mkdirSync, readdirSync, rmSync } from "node:fs"
-import { join } from "node:path"
+import { dirname, join } from "node:path"
 
 type Options = {
 	assetsDir: string
@@ -15,7 +15,7 @@ const parseArgs = (): Options => {
 
 	return {
 		assetsDir: getArg("--assets-dir", "public/assets"),
-		outDir: getArg("--out-dir", ".gemini-previews"),
+		outDir: getArg("--out-dir", "tmp/tag-meme/previews"),
 	}
 }
 
@@ -34,6 +34,7 @@ const run = (cmd: string[]) => {
 
 const options = parseArgs()
 rmSync(options.outDir, { recursive: true, force: true })
+mkdirSync(dirname(options.outDir), { recursive: true })
 mkdirSync(options.outDir, { recursive: true })
 
 const files = readdirSync(options.assetsDir).sort((a, b) => a.localeCompare(b))

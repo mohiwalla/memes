@@ -7,7 +7,7 @@ import {
 	rmSync,
 	writeFileSync,
 } from "node:fs"
-import { join } from "node:path"
+import { dirname, join } from "node:path"
 
 type Options = {
 	assetsDir: string
@@ -33,10 +33,10 @@ const parseArgs = (): Options => {
 
 	return {
 		assetsDir: getArg("--assets-dir", "public/assets")!,
-		previewDir: getArg("--preview-dir", ".gemini-previews")!,
-		aliasDir: getArg("--alias-dir", ".gemini-previews-id")!,
+		previewDir: getArg("--preview-dir", "tmp/tag-meme/previews")!,
+		aliasDir: getArg("--alias-dir", "tmp/tag-meme/previews-id")!,
 		dbPath: getArg("--db-path", "src/lib/tags-database.ts")!,
-		outPath: getArg("--out-path", ".gemini-previews/tags.generated.json")!,
+		outPath: getArg("--out-path", "tmp/tag-meme/tags.generated.json")!,
 		batchSize: Number(getArg("--batch-size", "6")),
 		limit: getArg("--limit") ? Number(getArg("--limit")) : undefined,
 		resume: hasFlag("--resume"),
@@ -79,6 +79,7 @@ if (options.limit) remaining = remaining.slice(0, options.limit)
 
 rmSync(options.aliasDir, { recursive: true, force: true })
 mkdirSync(options.aliasDir, { recursive: true })
+mkdirSync(dirname(options.outPath), { recursive: true })
 
 const aliasToFile = new Map<string, string>()
 

@@ -14,7 +14,7 @@ const parseArgs = (): Options => {
 
 	return {
 		dbPath: getArg("--db-path", "src/lib/tags-database.ts"),
-		inputPath: getArg("--input-path", ".gemini-previews/tags.generated.json"),
+		inputPath: getArg("--input-path", "tmp/tag-meme/tags.generated.json"),
 	}
 }
 

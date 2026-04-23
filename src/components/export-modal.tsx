@@ -1,9 +1,8 @@
-import { Download, Copy } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { Download } from "lucide-react"
+import { badgeVariants } from "@/components/ui/badge"
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog"
@@ -22,9 +21,9 @@ export type ExportModalProps = {
 	setPreset: (p: SizePreset) => void
 	dims: Dims
 	estSize: string
-	isRendering: boolean
+	isDownloading: boolean
 	onDownload: () => void
-	onCopy: () => void
+	onTagClick: (tag: string) => void
 }
 
 export function ExportModal({
@@ -38,9 +37,9 @@ export function ExportModal({
 	setPreset,
 	dims,
 	estSize,
-	isRendering,
+	isDownloading,
 	onDownload,
-	onCopy,
+	onTagClick,
 }: ExportModalProps) {
 	const isGifFile = selectedMeme.toLowerCase().endsWith(".gif")
 	const tags = getTagsForMeme(selectedMeme)
@@ -74,11 +73,6 @@ export function ExportModal({
 						<DialogTitle className="font-heading text-[28px] leading-tight tracking-tight text-meme-ink">
 							Export
 						</DialogTitle>
-						<DialogDescription className="text-[13px] text-meme-ink-2">
-							{isGifFile
-								? "GIF stays original. Animation stays intact."
-								: "Pick format, resize, ship."}
-						</DialogDescription>
 					</DialogHeader>
 
 					{!isGifFile && (
@@ -92,10 +86,10 @@ export function ExportModal({
 										key={f}
 										onClick={() => setFmt(f)}
 										className={cn(
-											"flex flex-col items-center rounded-xl border-2 border-meme-ink bg-meme-paper py-3.5 px-1.5 transition-all",
+											"meme-pressable [--meme-shadow-active:2px_2px_0_var(--color-meme-ink)] flex flex-col items-center rounded-xl border-2 border-meme-ink bg-meme-paper py-3.5 px-1.5",
 											fmt === f
-												? "bg-meme-accent text-white shadow-[3px_3px_0_var(--color-meme-ink)]"
-												: "hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[3px_4px_0_var(--color-meme-ink)]",
+												? "[--meme-shadow-rest:3px_3px_0_var(--color-meme-ink)] [--meme-shadow-hover:5px_5px_0_var(--color-meme-ink)] bg-meme-accent text-white"
+												: "[--meme-shadow-rest:0_0_0_transparent] [--meme-shadow-hover:3px_4px_0_var(--color-meme-ink)]",
 										)}
 									>
 										<span className="text-sm font-bold tracking-tight uppercase">
@@ -131,10 +125,10 @@ export function ExportModal({
 										key={p}
 										onClick={() => setPreset(p)}
 										className={cn(
-											"rounded-full border-2 border-meme-ink px-3.5 py-1.5 font-mono text-[11px] font-semibold tracking-wider transition-all hover:-translate-y-0.5",
+											"meme-pressable [--meme-shadow-active:2px_2px_0_var(--color-meme-ink)] rounded-full border-2 border-meme-ink px-3.5 py-1.5 font-mono text-[11px] font-semibold tracking-wider",
 											preset === p
-												? "bg-meme-ink text-meme-bg"
-												: "bg-meme-paper",
+												? "[--meme-shadow-rest:3px_3px_0_var(--color-meme-ink)] [--meme-shadow-hover:5px_5px_0_var(--color-meme-ink)] bg-meme-ink text-meme-bg"
+												: "[--meme-shadow-rest:0_0_0_transparent] [--meme-shadow-hover:3px_3px_0_var(--color-meme-ink)] bg-meme-paper",
 										)}
 									>
 										{p === "original"
@@ -181,9 +175,19 @@ export function ExportModal({
 						{tags.length ? (
 							<div className="flex flex-wrap gap-2">
 								{tags.map(tag => (
-									<Badge key={tag} variant="outline">
-										{tag}
-									</Badge>
+									<button
+										key={tag}
+										type="button"
+										onClick={() => {
+											onTagClick(tag)
+										}}
+										className={cn(
+											badgeVariants({ variant: "outline" }),
+											"meme-pressable [--meme-shadow-rest:2px_2px_0_var(--color-meme-ink)] [--meme-shadow-hover:4px_4px_0_var(--color-meme-ink)] [--meme-shadow-active:1px_1px_0_var(--color-meme-ink)] cursor-pointer border-2 border-meme-ink bg-meme-paper px-2.5 py-1 font-mono text-[11px] font-semibold tracking-wide text-meme-ink hover:bg-meme-accent2 hover:text-meme-ink",
+										)}
+									>
+										#{tag}
+									</button>
 								))}
 							</div>
 						) : (
@@ -201,28 +205,16 @@ export function ExportModal({
 
 						<div
 							className={cn(
-								"mt-3.5 grid gap-2.5",
-								isGifFile
-									? "grid-cols-1"
-									: "grid-cols-[1fr_2fr]",
+								"mt-3.5",
 							)}
 						>
-							{!isGifFile && (
-								<button
-									onClick={onCopy}
-									disabled={isRendering}
-									className="flex items-center justify-center gap-2 rounded-2xl border-[2.5px] border-meme-ink bg-meme-paper py-3.5 px-4 font-heading text-sm lowercase shadow-[3px_3px_0_var(--color-meme-ink)] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:bg-meme-accent2 hover:shadow-[5px_5px_0_var(--color-meme-ink)] disabled:opacity-40"
-								>
-									<Copy size={16} /> copy
-								</button>
-							)}
 							<button
 								onClick={onDownload}
-								disabled={isRendering}
-								className="flex items-center justify-center gap-2 rounded-2xl border-[2.5px] border-meme-ink bg-meme-accent py-3.5 px-4 font-heading text-sm lowercase text-white shadow-[4px_5px_0_var(--color-meme-ink)] transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[6px_8px_0_var(--color-meme-ink)] disabled:opacity-40"
+								disabled={isDownloading}
+								className="meme-pressable [--meme-shadow-rest:4px_5px_0_var(--color-meme-ink)] [--meme-shadow-hover:6px_8px_0_var(--color-meme-ink)] flex w-full items-center justify-center gap-2 rounded-2xl border-[2.5px] border-meme-ink bg-meme-accent py-3.5 px-4 font-heading text-sm text-white disabled:opacity-40"
 							>
 								<Download size={16} />{" "}
-								{isRendering ? "rendering..." : "download"}
+								{isDownloading ? "Rendering..." : "Download"}
 							</button>
 						</div>
 					</div>

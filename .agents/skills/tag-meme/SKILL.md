@@ -1,11 +1,11 @@
 ---
 name: tag-meme
-description: Tag meme assets by actual visual content, not filenames. Use when populating or updating `src/lib/tags-database.ts`, classifying meme images/GIFs, or generating search tags for meme libraries. Workflow uses Bun scripts, GIF frame sheets, alias previews to hide filenames, and Gemini CLI for visual tagging.
+description: Tag meme assets and generate display titles by actual visual content, not filenames. Use when populating or updating `src/lib/tags-database.ts`, `src/lib/titles-database.ts`, classifying meme images/GIFs, or generating search labels for meme libraries. Workflow uses Bun scripts, GIF frame sheets, alias previews to hide filenames, and Gemini CLI for visual tagging and title generation.
 ---
 
 # Tag Meme
 
-Use this skill when meme assets need search tags based on what is visibly happening, not asset filenames.
+Use this skill when meme assets need search tags or display titles based on what is visibly happening, not asset filenames.
 
 ## Tools
 
@@ -28,15 +28,19 @@ Need:
    - source/person/character if identifiable
    - visible expression or action
    - likely meme search intent
-7. Save batch checkpoints after every Gemini batch.
-8. Merge tags into `src/lib/tags-database.ts`, strip exact filler tags like `reaction`, sort keys.
-9. Spot-check weird or high-risk entries with image viewer before finalizing.
+7. For titles, ask Gemini for concise Title Case UI labels from pixels only.
+8. Save batch checkpoints after every Gemini batch.
+9. Merge tags into `src/lib/tags-database.ts`, strip exact filler tags like `reaction`, sort keys.
+10. Merge titles into `src/lib/titles-database.ts`, strip generic words like `Meme`, `Reaction`, `Gif`.
+11. Spot-check weird or high-risk entries with image viewer before finalizing.
 
 ## Files
 
 - Build previews: [`scripts/build-previews.ts`](./scripts/build-previews.ts)
 - Generate tags from previews: [`scripts/generate-tags.ts`](./scripts/generate-tags.ts)
 - Merge generated tags into database: [`scripts/write-tags-database.ts`](./scripts/write-tags-database.ts)
+- Generate titles from previews: [`scripts/generate-titles.ts`](./scripts/generate-titles.ts)
+- Merge generated titles into database: [`scripts/write-titles-database.ts`](./scripts/write-titles-database.ts)
 - Run end-to-end flow: [`scripts/run-tag-meme.ts`](./scripts/run-tag-meme.ts)
 
 ## Standard commands
@@ -51,6 +55,13 @@ Full run:
 
 ```bash
 bun .agents/skills/tag-meme/scripts/run-tag-meme.ts
+```
+
+Generate GIF titles only:
+
+```bash
+bun .agents/skills/tag-meme/scripts/generate-titles.ts
+bun .agents/skills/tag-meme/scripts/write-titles-database.ts
 ```
 
 Resume from checkpoint:
@@ -89,10 +100,13 @@ Prompt must say:
 
 ## Output locations
 
-- Preview PNGs: `.gemini-previews/`
-- Alias PNGs: `.gemini-previews-id/`
-- Generated checkpoint JSON: `.gemini-previews/tags.generated.json`
+- Preview PNGs: `tmp/tag-meme/previews/`
+- Alias PNGs: `tmp/tag-meme/previews-id/`
+- Title alias PNGs: `tmp/tag-meme/title-previews-id/`
+- Generated checkpoint JSON: `tmp/tag-meme/tags.generated.json`
+- Generated titles JSON: `tmp/tag-meme/titles.generated.json`
 - Final database: `src/lib/tags-database.ts`
+- Final titles database: `src/lib/titles-database.ts`
 
 ## When to inspect manually
 
@@ -106,3 +120,4 @@ Prompt must say:
 - For static WEBP/PNG/JPG, `sips` is more reliable than `ffmpeg` on some files.
 - For GIFs, `ffprobe` duration plus `ffmpeg` tile sheet gives better context than first-frame only.
 - Incremental apply matters. User may want results written before whole run finishes.
+- Keep generated previews and checkpoint files under project `tmp/`, not repo root.

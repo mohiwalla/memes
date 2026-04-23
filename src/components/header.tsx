@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useEffectEvent, useRef } from "react"
 import { Search, X } from "lucide-react"
 
 type HomeHeaderProps = {
@@ -7,46 +7,58 @@ type HomeHeaderProps = {
 	filteredCount: number
 }
 
+const getIsApplePlatform = () => {
+	if (typeof navigator === "undefined") return false
+
+	const browserNavigator = navigator as Navigator & {
+		userAgentData?: { platform?: string }
+	}
+	const platform =
+		browserNavigator.userAgentData?.platform ?? navigator.platform ?? ""
+
+	return /mac|iphone|ipad|ipod/i.test(platform)
+}
+
 export function Header({
 	search,
 	onSearchChange,
 	filteredCount,
 }: HomeHeaderProps) {
 	const searchRef = useRef<HTMLInputElement>(null)
+	const isApplePlatform = getIsApplePlatform()
+	const shortcutLabel = isApplePlatform ? "⌘K" : "Ctrl+K"
+	const focusSearch = useEffectEvent(() => {
+		searchRef.current?.focus()
+		searchRef.current?.select()
+	})
+	const clearOrBlurSearch = useEffectEvent(() => {
+		if (search) {
+			onSearchChange("")
+			return
+		}
+
+		searchRef.current?.blur()
+	})
 
 	useEffect(() => {
-		const isEditableTarget = (target: EventTarget | null) => {
-			if (!(target instanceof HTMLElement)) return false
-
-			return (
-				target.isContentEditable ||
-				target.tagName === "INPUT" ||
-				target.tagName === "TEXTAREA" ||
-				target.tagName === "SELECT"
-			)
-		}
-
-		const focusSearch = () => {
-			searchRef.current?.focus()
-			searchRef.current?.select()
-		}
-
 		const onKeyDown = (event: KeyboardEvent) => {
+			const usesSearchShortcut = isApplePlatform
+				? event.metaKey && !event.ctrlKey
+				: event.ctrlKey && !event.metaKey
+
 			if (
-				(event.metaKey || event.ctrlKey) &&
-				event.key.toLowerCase() === "f"
+				event.key === "Escape" &&
+				document.activeElement === searchRef.current
 			) {
-				event.preventDefault()
-				focusSearch()
+				clearOrBlurSearch()
 				return
 			}
 
 			if (
-				event.key === "/" &&
-				!event.metaKey &&
-				!event.ctrlKey &&
+				usesSearchShortcut &&
 				!event.altKey &&
-				!isEditableTarget(event.target)
+				!event.shiftKey &&
+				event.key.toLowerCase() === "k"
 			) {
 				event.preventDefault()
 				focusSearch()
@@ -55,7 +67,7 @@ export function Header({
 
 		window.addEventListener("keydown", onKeyDown)
 		return () => window.removeEventListener("keydown", onKeyDown)
-	}, [])
+	}, [isApplePlatform])
 
 	return (
 		<header className="relative z-10 px-6 pt-9 pb-4 sm:px-12">
@@ -82,7 +94,7 @@ export function Header({
 						<input
 							ref={searchRef}
 							type="text"
-							placeholder="search memes... (/ or Ctrl/Cmd+F)"
+							placeholder={`search memes... (${shortcutLabel})`}
 							aria-label="Search memes"
 							value={search}
 							onChange={e => onSearchChange(e.target.value)}

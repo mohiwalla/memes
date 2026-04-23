@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { ExportModal } from "../components/export-modal"
 import { Footer } from "../components/footer"
 import { Header } from "../components/header"
 import { GridUI } from "../components/grid-ui"
 import { loadImg, triggerDownload, searchMemes } from "@/lib/utils"
+import { parseAsString, useQueryStates } from "nuqs"
 import type { Dims, MemeFormat, SizePreset } from "@/types"
 
 const getDimsForPreset = (preset: SizePreset, natW: number, natH: number) => {
@@ -29,54 +30,64 @@ const getDimsForPreset = (preset: SizePreset, natW: number, natH: number) => {
 }
 
 const isGifFile = (name: string) => name.toLowerCase().endsWith(".gif")
+const getHistoryIndex = () =>
+	typeof window === "undefined" ? null : (window.history.state?.idx ?? null)
 
-export default function HomePage() {
-	const [images, setImages] = useState<string[]>([])
-	const [search, setSearch] = useState("")
-	const [selectedMeme, setSelectedMeme] = useState<string | null>(null)
+type SelectedMemeExportModalProps = {
+	selectedMeme: string
+	onClose: () => void
+	onTagClick: (tag: string) => void
+}
 
-	const [fmt, setFmt] = useState<MemeFormat>("png")
+const canvasToBlob = (
+	canvas: HTMLCanvasElement,
+	type: string,
+	quality?: number,
+) =>
+	new Promise<Blob | null>(resolve => {
+		canvas.toBlob(resolve, type, quality)
+	})
+
+function SelectedMemeExportModal({
+	selectedMeme,
+	onClose,
+	onTagClick,
+}: SelectedMemeExportModalProps) {
+	const [fmt, setFmt] = useState<MemeFormat>(
+		isGifFile(selectedMeme) ? "gif" : "png",
+	)
 	const [quality, setQuality] = useState(92)
 	const [preset, setPreset] = useState<SizePreset>("original")
 	const [dims, setDims] = useState<Dims>({ w: 0, h: 0, natW: 0, natH: 0 })
-	const [isRendering, setIsRendering] = useState(false)
+	const [isDownloading, setIsDownloading] = useState(false)
 
 	useEffect(() => {
-		fetch("/list.json")
-			.then(res => res.json())
-			.then(data => setImages(data))
-			.catch(console.error)
-	}, [])
+		let isCancelled = false
 
-	const filtered = useMemo(() => {
-		return searchMemes(images, search)
-	}, [images, search])
+		loadImg(`/assets/${selectedMeme}`)
+			.then(img => {
+				if (isCancelled) return
 
-	const openModal = async (name: string) => {
-		const gifFile = isGifFile(name)
-
-		setSelectedMeme(name)
-		setFmt(gifFile ? "gif" : "png")
-		setQuality(92)
-		setPreset("original")
-		setDims({ w: 0, h: 0, natW: 0, natH: 0 })
-
-		try {
-			const img = await loadImg(`/assets/${name}`)
-			setDims({
-				w: img.naturalWidth,
-				h: img.naturalHeight,
-				natW: img.naturalWidth,
-				natH: img.naturalHeight,
+				setDims({
+					w: img.naturalWidth,
+					h: img.naturalHeight,
+					natW: img.naturalWidth,
+					natH: img.naturalHeight,
+				})
 			})
-		} catch (e) {
-			console.error("Failed to load image for dimensions", e)
-		}
-	}
+			.catch(error => {
+				if (!isCancelled) {
+					console.error(
+						"Failed to load image for dimensions",
+						error,
+					)
+				}
+			})
 
-	const closeModal = () => {
-		setSelectedMeme(null)
-	}
+		return () => {
+			isCancelled = true
+		}
+	}, [selectedMeme])
 
 	const { natW, natH } = dims
 	const exportDims =
@@ -102,7 +113,6 @@ export default function HomePage() {
 	})()
 
 	const renderCanvas = async () => {
-		if (!selectedMeme) return null
 		const img = await loadImg(`/assets/${selectedMeme}`)
 		const { w, h } = exportDims
 		const canvas = document.createElement("canvas")
@@ -121,15 +131,17 @@ export default function HomePage() {
 	}
 
 	const handleDownload = async () => {
-		if (!selectedMeme) return
-		setIsRendering(true)
+		setIsDownloading(true)
 
 		try {
 			if (fmt === "gif") {
 				triggerDownload(`/assets/${selectedMeme}`, selectedMeme)
 			} else {
 				const canvas = await renderCanvas()
-				if (!canvas) return
+				if (!canvas) {
+					setIsDownloading(false)
+					return
+				}
 				const mime = {
 					png: "image/png",
 					jpg: "image/jpeg",
@@ -138,67 +150,123 @@ export default function HomePage() {
 				const q =
 					fmt === "jpg" || fmt === "webp" ? quality / 100 : undefined
 
-				canvas.toBlob(
-					blob => {
-						if (!blob) {
-							setIsRendering(false)
-							return
-						}
-						const url = URL.createObjectURL(blob)
-						const ext = fmt
-						triggerDownload(
-							url,
-							selectedMeme.replace(/\.[^.]+$/, "") + "." + ext,
-						)
-						setTimeout(() => URL.revokeObjectURL(url), 3000)
-						setIsRendering(false)
-					},
-					mime,
-					q,
+				const blob = await canvasToBlob(canvas, mime, q)
+				if (!blob) {
+					setIsDownloading(false)
+					return
+				}
+				const url = URL.createObjectURL(blob)
+				const ext = fmt
+				triggerDownload(
+					url,
+					selectedMeme.replace(/\.[^.]+$/, "") + "." + ext,
 				)
+				setTimeout(() => URL.revokeObjectURL(url), 3000)
+				setIsDownloading(false)
 				return
 			}
 		} catch (e) {
 			console.error(e)
 		}
-		setIsRendering(false)
+		setIsDownloading(false)
 	}
 
-	const handleCopy = async () => {
-		if (!selectedMeme || fmt === "gif") return
-		setIsRendering(true)
+	return (
+		<ExportModal
+			selectedMeme={selectedMeme}
+			onClose={onClose}
+			fmt={fmt}
+			setFmt={setFmt}
+			quality={quality}
+			setQuality={setQuality}
+			preset={preset}
+			setPreset={setPreset}
+			dims={exportDims}
+			estSize={estSize}
+			isDownloading={isDownloading}
+			onDownload={handleDownload}
+			onTagClick={onTagClick}
+		/>
+	)
+}
 
-		try {
-			const canvas = await renderCanvas()
-			if (!canvas) return
-			canvas.toBlob(async blob => {
-				if (!blob) {
-					setIsRendering(false)
-					return
-				}
-				try {
-					await navigator.clipboard.write([
-						new ClipboardItem({ "image/png": blob }),
-					])
-				} catch (e) {
-					console.error("Failed to copy blob", e)
-					await navigator.clipboard.writeText(
-						`${window.location.origin}/assets/${selectedMeme}`,
-					)
-				}
-				setIsRendering(false)
-			}, "image/png")
-		} catch (e) {
-			console.error(e)
-			setIsRendering(false)
+export default function HomePage() {
+	const [images, setImages] = useState<string[]>([])
+	const [{ search, selectedMeme }, setUrlState] = useQueryStates(
+		{
+			search: parseAsString.withDefault(""),
+			selectedMeme: parseAsString,
+		},
+		{
+			urlKeys: {
+				search: "q",
+				selectedMeme: "meme",
+			},
+		},
+	)
+	const dismissibleModalHistoryEntriesRef = useRef(new Set<number>())
+
+	useEffect(() => {
+		fetch("/list.json")
+			.then(res => res.json())
+			.then(data => setImages(data))
+			.catch(console.error)
+	}, [])
+
+	const filtered = useMemo(() => {
+		return searchMemes(images, search)
+	}, [images, search])
+
+	const handleSearchChange = (value: string) => {
+		void setUrlState({ search: value || null })
+	}
+
+	const handleTagClick = (tag: string) => {
+		void setUrlState(
+			{
+				search: tag,
+				selectedMeme: null,
+			},
+			{ history: "push" },
+		)
+	}
+
+	const openModal = (name: string) => {
+		const currentHistoryIndex = getHistoryIndex()
+		if (currentHistoryIndex !== null) {
+			dismissibleModalHistoryEntriesRef.current.add(currentHistoryIndex + 1)
 		}
+
+		void setUrlState({ selectedMeme: name }, { history: "push" })
 	}
+
+	const closeModal = () => {
+		const currentHistoryIndex = getHistoryIndex()
+
+		if (
+			currentHistoryIndex !== null &&
+			dismissibleModalHistoryEntriesRef.current.has(currentHistoryIndex)
+		) {
+			window.history.back()
+			return
+		}
+
+		void setUrlState({ selectedMeme: null })
+	}
+
+	useEffect(() => {
+		if (!selectedMeme) return
+
+		if (images.length > 0 && !images.includes(selectedMeme)) {
+			void setUrlState({ selectedMeme: null })
+		}
+	}, [images, selectedMeme, setUrlState])
 
 	return (
 		<div className="min-h-screen">
 			<Header
 				search={search}
-				onSearchChange={setSearch}
+				onSearchChange={handleSearchChange}
 				filteredCount={filtered.length}
 			/>
 
@@ -212,20 +280,11 @@ export default function HomePage() {
 			<Footer memeCount={filtered.length} />
 
 			{selectedMeme && (
-				<ExportModal
+				<SelectedMemeExportModal
+					key={selectedMeme}
 					selectedMeme={selectedMeme}
 					onClose={closeModal}
-					fmt={fmt}
-					setFmt={setFmt}
-					quality={quality}
-					setQuality={setQuality}
-					preset={preset}
-					setPreset={setPreset}
-					dims={exportDims}
-					estSize={estSize}
-					isRendering={isRendering}
-					onDownload={handleDownload}
-					onCopy={handleCopy}
+					onTagClick={handleTagClick}
 				/>
 			)}
 		</div>
