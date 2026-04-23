@@ -213,10 +213,10 @@ export function Header({
 	return (
 		<header className="relative z-10 px-6 pt-9 pb-4 sm:px-12">
 			<div className="flex flex-wrap items-center justify-between gap-5">
-				<div className="flex items-center gap-3.5 font-heading">
-					<div className="relative h-13 w-13 shrink-0 -rotate-8 rounded-[50%_50%_50%_18%] border-3 border-meme-ink bg-meme-accent shadow-[5px_5px_0_var(--color-meme-ink)]">
-						<div className="absolute top-4 left-3 h-3.25 w-2.25 rounded-full bg-meme-ink" />
-						<div className="absolute top-4 right-3 h-3.25 w-2.25 rounded-full bg-meme-ink" />
+				<div className="flex items-center gap-2.5 font-heading">
+					<div className="relative size-13 shrink-0 -rotate-8 rounded-[50%_50%_50%_18%] border-3 border-meme-ink bg-meme-accent shadow-[5px_5px_0_var(--color-meme-ink)] scale-80">
+						<div className="absolute top-4 left-3 size-2.25 rounded-full bg-meme-ink" />
+						<div className="absolute top-4 right-3 size-2.25 rounded-full bg-meme-ink" />
 					</div>
 					<div className="text-[34px] leading-none tracking-tight">
 						MEME

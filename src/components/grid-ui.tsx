@@ -20,6 +20,7 @@ const MIN_TILE_HEIGHT = 160
 const TILE_HORIZONTAL_PADDING_PX = 20
 const TILE_TOP_PADDING_PX = 10
 const TILE_TITLE_HEIGHT_PX = 44
+const MIN_VIRTUALIZED_RESULTS = 12
 const CARD_ENTER_TRANSITION = {
 	type: "spring",
 	stiffness: 520,
@@ -120,6 +121,7 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 	const renderedItems = renderedResultSet.items
 	const animateResultChange = renderedResultSet.isAnimating && !reduceMotion
 	const safeCols = Math.max(1, virtualState.cols)
+	const shouldVirtualize = renderedItems.length >= MIN_VIRTUALIZED_RESULTS
 
 	useEffect(() => {
 		const updateTimeoutId = window.setTimeout(() => {
@@ -293,8 +295,11 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 	const endIndex = Math.min(renderedItems.length, endRow * safeCols)
 	const offsetY = startRow * rowHeight
 	const visibleItems = useMemo(
-		() => renderedItems.slice(startIndex, endIndex),
-		[renderedItems, startIndex, endIndex],
+		() =>
+			shouldVirtualize
+				? renderedItems.slice(startIndex, endIndex)
+				: renderedItems,
+		[renderedItems, shouldVirtualize, startIndex, endIndex],
 	)
 
 	return (
@@ -302,14 +307,24 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 			<div
 				ref={containerRef}
 				className="relative"
-				style={{ height: `${gridHeight}px` }}
+				style={
+					shouldVirtualize ? { height: `${gridHeight}px` } : undefined
+				}
 			>
 				<div
 					ref={gridRef}
-					className="meme-browser-grid absolute right-0 left-0"
-					style={{
-						transform: `translateY(${offsetY}px)`,
-					}}
+					className={
+						shouldVirtualize
+							? "meme-browser-grid absolute inset-x-0"
+							: "meme-browser-grid"
+					}
+					style={
+						shouldVirtualize
+							? {
+									transform: `translateY(${offsetY}px)`,
+								}
+							: undefined
+					}
 				>
 					<AnimatePresence
 						initial={false}
@@ -319,7 +334,11 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 						{visibleItems.map((name, index) => (
 							<motion.div
 								key={name}
-								ref={index === 0 ? measureRef : undefined}
+								ref={
+									shouldVirtualize && index === 0
+										? measureRef
+										: undefined
+								}
 								custom={animateResultChange}
 								variants={cardMotionVariants}
 								initial={animateResultChange ? "hidden" : false}

@@ -5,6 +5,8 @@ import Router from "@/app/router"
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
-		<Router />
+		<div className="max-w-420 mx-auto">
+			<Router />
+		</div>
 	</StrictMode>,
 )
