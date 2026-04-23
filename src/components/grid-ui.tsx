@@ -3,7 +3,6 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { MemeTile } from "./meme-tile"
 
 type MemeGridProps = {
-	cols: number
 	items: string[]
 	search: string
 	onOpenMeme: (name: string) => void
@@ -73,6 +72,7 @@ const cardMotionVariants = {
 }
 
 type VirtualState = {
+	cols: number
 	gridTop: number
 	gridWidth: number
 	scrollY: number
@@ -81,6 +81,7 @@ type VirtualState = {
 }
 
 const getInitialVirtualState = (): VirtualState => ({
+	cols: 1,
 	gridTop: 0,
 	gridWidth: 0,
 	scrollY: typeof window === "undefined" ? 0 : window.scrollY,
@@ -100,9 +101,9 @@ const getEstimatedTileHeight = (gridWidth: number, cols: number) => {
 	)
 }
 
-export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
-	const safeCols = Math.max(1, cols)
+export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 	const containerRef = useRef<HTMLDivElement>(null)
+	const gridRef = useRef<HTMLDivElement>(null)
 	const measureRef = useRef<HTMLDivElement>(null)
 	const lastScrollSampleRef = useRef({
 		time: 0,
@@ -118,6 +119,7 @@ export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
 	}))
 	const renderedItems = renderedResultSet.items
 	const animateResultChange = renderedResultSet.isAnimating && !reduceMotion
+	const safeCols = Math.max(1, virtualState.cols)
 
 	useEffect(() => {
 		const updateTimeoutId = window.setTimeout(() => {
@@ -165,15 +167,26 @@ export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
 			const gridTop = Math.round(
 				containerRect ? containerRect.top + window.scrollY : 0,
 			)
+			const computedGridTemplateColumns = window.getComputedStyle(
+				gridRef.current ?? container ?? document.body,
+			).gridTemplateColumns
+			const colsFromCss = Math.max(
+				1,
+				computedGridTemplateColumns
+					.split(" ")
+					.filter(track => track !== "none" && track.length > 0)
+					.length,
+			)
 			const measuredTileHeight = Math.round(
 				measureRef.current?.getBoundingClientRect().height ?? 0,
 			)
 			const tileHeight =
 				measuredTileHeight ||
-				getEstimatedTileHeight(gridWidth, safeCols)
+				getEstimatedTileHeight(gridWidth, colsFromCss)
 
 			setVirtualState(previous => {
 				const next = {
+					cols: colsFromCss,
 					gridTop,
 					gridWidth,
 					scrollY: Math.round(window.scrollY),
@@ -182,6 +195,7 @@ export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
 				}
 
 				if (
+					previous.cols === next.cols &&
 					previous.gridTop === next.gridTop &&
 					previous.gridWidth === next.gridWidth &&
 					previous.scrollY === next.scrollY &&
@@ -250,7 +264,7 @@ export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
 			window.removeEventListener("scroll", handleScroll)
 			window.removeEventListener("resize", scheduleVirtualStateUpdate)
 		}
-	}, [safeCols, renderedItems.length])
+	}, [renderedItems.length])
 
 	const totalRows = Math.ceil(renderedItems.length / safeCols)
 	const rowHeight = virtualState.tileHeight + GAP_PX
@@ -291,9 +305,9 @@ export function GridUI({ cols, items, search, onOpenMeme }: MemeGridProps) {
 				style={{ height: `${gridHeight}px` }}
 			>
 				<div
-					className="absolute right-0 left-0 grid gap-5.5"
+					ref={gridRef}
+					className="meme-browser-grid absolute right-0 left-0"
 					style={{
-						gridTemplateColumns: `repeat(${safeCols}, 1fr)`,
 						transform: `translateY(${offsetY}px)`,
 					}}
 				>

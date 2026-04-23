@@ -195,6 +195,9 @@
 	* {
 		@apply border-border outline-ring/50;
 	}
+	img {
+		@apply select-none;
+	}
 	body {
 		@apply bg-background text-foreground;
 		font-family: var(--font-sans);
@@ -287,7 +290,17 @@
 				transparent 75%,
 				color-mix(in srgb, var(--color-meme-ink) 10%, transparent) 75%
 			);
-		background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+		background-position:
+			0 0,
+			0 9px,
+			9px -9px,
+			-9px 0;
 		background-size: 18px 18px;
+	}
+
+	.meme-browser-grid {
+		display: grid;
+		gap: 22px;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
 	}
 }

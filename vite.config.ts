@@ -7,10 +7,7 @@ import tailwindcss from "@tailwindcss/vite"
 
 const MEME_ASSETS_DIR = path.resolve(__dirname, "./public/assets")
 
-const listFiles = async (
-	dir: string,
-	baseDir = dir,
-): Promise<string[]> => {
+const listFiles = async (dir: string, baseDir = dir): Promise<string[]> => {
 	const entries = await fs.readdir(dir, { withFileTypes: true })
 
 	const files = await Promise.all(

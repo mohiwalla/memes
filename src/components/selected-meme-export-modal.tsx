@@ -12,6 +12,7 @@ import {
 import {
 	downloadFile,
 	getAssetUrl,
+	getExt,
 	loadImg,
 	triggerDownload,
 } from "@/lib/utils"
@@ -31,6 +32,16 @@ const MIME_BY_FORMAT: Record<MemeFormat, string> = {
 }
 
 type DownloadStatus = "idle" | "rendering" | "success"
+
+const getDefaultExportFormat = (selectedMeme: string): MemeFormat => {
+	const ext = getExt(selectedMeme)
+
+	if (ext === "gif") return "gif"
+	if (ext === "webp") return "webp"
+	if (ext === "jpg" || ext === "jpeg") return "jpg"
+
+	return "png"
+}
 
 const fireDownloadConfetti = (origin: DownloadOrigin) => {
 	const prefersReducedMotion = window.matchMedia(
@@ -56,8 +67,8 @@ export function SelectedMemeExportModal({
 	onClose,
 	onTagClick,
 }: SelectedMemeExportModalProps) {
-	const [fmt, setFmt] = useState<MemeFormat>(
-		isGifFile(selectedMeme) ? "gif" : "png",
+	const [fmt, setFmt] = useState<MemeFormat>(() =>
+		getDefaultExportFormat(selectedMeme),
 	)
 	const [preset, setPreset] = useState<SizePreset>("original")
 	const [dims, setDims] = useState<Dims>({ w: 0, h: 0, natW: 0, natH: 0 })
@@ -90,6 +101,10 @@ export function SelectedMemeExportModal({
 			? sourceFileSize
 			: getEstimatedExportSize(fmt, exportDims, DEFAULT_EXPORT_QUALITY)
 	const isDownloading = downloadStatus === "rendering"
+
+	useEffect(() => {
+		setFmt(getDefaultExportFormat(selectedMeme))
+	}, [selectedMeme])
 
 	useEffect(() => {
 		return () => {
@@ -282,10 +297,7 @@ export function SelectedMemeExportModal({
 				files: [file],
 			})
 		} catch (error) {
-			if (
-				error instanceof DOMException &&
-				error.name === "AbortError"
-			) {
+			if (error instanceof DOMException && error.name === "AbortError") {
 				return
 			}
 

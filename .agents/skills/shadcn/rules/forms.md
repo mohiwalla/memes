@@ -61,7 +61,7 @@ Never use raw `Input` or `Textarea` inside an `InputGroup`.
 ```tsx
 import { InputGroup, InputGroupInput } from "@/components/ui/input-group"
 
-<InputGroup>
+;<InputGroup>
   <InputGroupInput placeholder="Search..." />
 </InputGroup>
 ```
@@ -86,9 +86,13 @@ Never place a `Button` directly inside or adjacent to an `Input` with custom pos
 **Correct:**
 
 ```tsx
-import { InputGroup, InputGroupInput, InputGroupAddon } from "@/components/ui/input-group"
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+} from "@/components/ui/input-group"
 
-<InputGroup>
+;<InputGroup>
   <InputGroupInput placeholder="Search..." />
   <InputGroupAddon>
     <Button size="icon">
@@ -127,7 +131,7 @@ const [selected, setSelected] = useState("daily")
 ```tsx
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
-<ToggleGroup spacing={2}>
+;<ToggleGroup spacing={2}>
   <ToggleGroupItem value="daily">Daily</ToggleGroupItem>
   <ToggleGroupItem value="weekly">Weekly</ToggleGroupItem>
   <ToggleGroupItem value="monthly">Monthly</ToggleGroupItem>
@@ -162,7 +166,9 @@ Use `FieldSet` + `FieldLegend` for related checkboxes, radios, or switches — n
   <FieldGroup className="gap-3">
     <Field orientation="horizontal">
       <Checkbox id="dark" />
-      <FieldLabel htmlFor="dark" className="font-normal">Dark mode</FieldLabel>
+      <FieldLabel htmlFor="dark" className="font-normal">
+        Dark mode
+      </FieldLabel>
     </Field>
   </FieldGroup>
 </FieldSet>

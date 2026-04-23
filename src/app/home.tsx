@@ -25,7 +25,6 @@ export default function HomePage() {
 			/>
 
 			<GridUI
-				cols={4}
 				items={filteredImages}
 				search={search}
 				onOpenMeme={openMeme}

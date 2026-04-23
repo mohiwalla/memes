@@ -62,8 +62,7 @@ for (const file of files) {
 				stderr: "pipe",
 			},
 		)
-		const duration =
-			new TextDecoder().decode(probe.stdout).trim() || "1"
+		const duration = new TextDecoder().decode(probe.stdout).trim() || "1"
 
 		run([
 			"ffmpeg",

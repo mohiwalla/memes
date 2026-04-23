@@ -40,10 +40,7 @@ const isEditableElement = (element: EventTarget | null) => {
 }
 
 const isPlainTypingKey = (event: KeyboardEvent) =>
-	event.key.length === 1 &&
-	!event.ctrlKey &&
-	!event.metaKey &&
-	!event.altKey
+	event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey
 
 const getIsApplePlatform = () => {
 	if (typeof navigator === "undefined") return false
