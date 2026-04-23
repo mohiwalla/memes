@@ -342,19 +342,6 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"greeting",
 		],
 	},
-	"freaky-sonic-sistertonin.gif": {
-		title: "Sonic The Hedgehog Distressed",
-		tags: [
-			"sonic the hedgehog",
-			"3d render",
-			"creepy",
-			"freaky",
-			"holding head",
-			"distressed",
-			"cursed",
-			"wide smile",
-		],
-	},
 	"freaky-sonic-sonic-the-hedgehog.gif": {
 		title: "Zesty Sonic Praying",
 		tags: [
@@ -452,19 +439,6 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"skeptical",
 			"questioning",
 			"animated",
-		],
-	},
-	"help.gif": {
-		title: "Shocked Dog Looking At Phone",
-		tags: [
-			"dog",
-			"smartphone",
-			"shocked",
-			"wide eyes",
-			"staring",
-			"disbelief",
-			"screen",
-			"scared",
 		],
 	},
 	"high-five-walter-white.gif": {
@@ -1101,18 +1075,6 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"goodbye",
 		],
 	},
-	"peace-out-peace-sign.gif": {
-		title: "Otter Giving Peace Sign",
-		tags: [
-			"animal",
-			"ferret",
-			"possum",
-			"peace sign",
-			"leaving",
-			"goodbye",
-			"disappearing",
-		],
-	},
 	"peace-out.gif": {
 		title: "Man Fading Away Peace",
 		tags: [
@@ -1359,7 +1321,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"disbelief",
 		],
 	},
-	"stan-twt-evil-chihuahua-1.gif": {
+	"stan-twt-evil-chihuahua.gif": {
 		title: "Chihuahua Grinning With Teeth",
 		tags: [
 			"chihuahua",
@@ -1370,19 +1332,6 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"weird dog",
 			"grin",
 			"intense",
-		],
-	},
-	"stan-twt-evil-chihuahua.gif": {
-		title: "Michael Jordan Get Help",
-		tags: [
-			"chihuahua",
-			"dog",
-			"side eye",
-			"awkward smile",
-			"suspicious",
-			"guilty",
-			"showing teeth",
-			"knowing smile",
 		],
 	},
 	"stop-it-stop.gif": {
@@ -1497,6 +1446,19 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"hold up",
 		],
 	},
+	"thats-porn.gif": {
+		title: "Peter That's Just Porn",
+		tags: [
+			"peter griffin",
+			"brian griffin",
+			"family guy",
+			"that's not a meme",
+			"that's just porn",
+			"calling it out",
+			"disapproving",
+			"horny posting",
+		],
+	},
 	"thumbs-up-hamster-cute.gif": {
 		title: "Hamster Giving Thumbs Up",
 		tags: [
@@ -1519,6 +1481,19 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"judgmental",
 			"serious face",
 			"phone humor",
+		],
+	},
+	"traumatized-dog.gif": {
+		title: "Shocked Dog Looking At Phone",
+		tags: [
+			"dog",
+			"smartphone",
+			"shocked",
+			"wide eyes",
+			"staring",
+			"disbelief",
+			"traumatized",
+			"bad news",
 		],
 	},
 	"up-is-not-jump-knee.gif": {

@@ -1,5 +1,5 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react"
-import { Github, Search, X } from "lucide-react"
+import { Github, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const REPO_URL = "https://github.com/mohiwalla/memes"
@@ -185,10 +185,34 @@ export function Header({
 				</div>
 
 				<div className="flex flex-wrap items-center gap-2.5">
+					<div className="relative flex items-center">
+						<div className="absolute left-3.5 flex items-center justify-center">
+							<div className="relative flex items-center justify-center">
+								<Search
+									className="h-4 w-4 text-meme-ink-2"
+									strokeWidth={2.5}
+								/>
+							</div>
+						</div>
+
+						<div className="absolute top-1/2 -mt-px -translate-1/2 -right-1 flex min-w-6 h-6 items-center justify-center rounded-full border-2 border-meme-ink bg-meme-accent px-1.5 font-sans text-[11px] font-bold text-meme-ink shadow-[2px_2px_0_var(--color-meme-ink)]">
+							{filteredCount}
+						</div>
+
+						<input
+							ref={searchRef}
+							type="text"
+							placeholder={`Search memes... (${shortcutLabel})`}
+							aria-label="Search memes"
+							value={search}
+							onChange={e => onSearchChange(e.target.value)}
+							className="w-55 sm:w-77.5 rounded-full border-[2.5px] border-meme-ink bg-meme-paper pl-9 pr-12 py-2.5 font-sans text-sm font-medium text-meme-ink outline-none shadow-[3px_3px_0_var(--color-meme-ink)] transition-all focus:shadow-[5px_5px_0_var(--color-meme-accent)] placeholder:text-meme-ink-2"
+						/>
+					</div>
+
 					<Button
 						variant="outline"
-						size="sm"
-						className="shrink-0"
+						className="shrink-0 gap-2.5 border-2 px-5! py-4.75 hover:bg-meme-accent2"
 						nativeButton={false}
 						render={
 							<a
@@ -199,38 +223,11 @@ export function Header({
 							/>
 						}
 					>
-						<Github data-icon="inline-start" />
-						GitHub
-						<span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+						<Github data-icon="inline-start" strokeWidth={3} />
+						<span className="font-mono font-bold">
 							{repoStarsLabel}
 						</span>
 					</Button>
-					<div className="relative flex items-center">
-						<Search
-							className="absolute left-3 h-3.75 w-3.75 text-meme-ink-2 pointer-events-none"
-							strokeWidth={2.5}
-						/>
-						<input
-							ref={searchRef}
-							type="text"
-							placeholder={`Search memes... (${shortcutLabel})`}
-							aria-label="Search memes"
-							value={search}
-							onChange={e => onSearchChange(e.target.value)}
-							className="w-[220px] sm:w-[310px] rounded-full border-[2.5px] border-meme-ink bg-meme-paper px-8.5 py-2.5 font-sans text-sm font-medium text-meme-ink outline-none shadow-[3px_3px_0_var(--color-meme-ink)] transition-all focus:border-meme-accent focus:shadow-[5px_5px_0_var(--color-meme-accent)] placeholder:text-meme-ink-2"
-						/>
-						{search && (
-							<button
-								onClick={() => onSearchChange("")}
-								className="absolute right-2.5 p-1 text-meme-ink-2 hover:text-meme-ink"
-							>
-								<X size={14} strokeWidth={3} />
-							</button>
-						)}
-					</div>
-					<div className="rounded-full border-2 border-meme-ink bg-meme-ink px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-widest text-meme-bg shadow-[3px_3px_0_var(--color-meme-ink)]">
-						{filteredCount} MEMES
-					</div>
 				</div>
 			</div>
 
@@ -240,13 +237,13 @@ export function Header({
 						✦ MEME STASH ✦ CLICK TO EXPORT ✦ SCROLL FOR MORE ✦ MEME
 						STASH ✦ CLICK TO EXPORT ✦ SCROLL FOR MORE ✦ MEME STASH ✦
 						CLICK TO EXPORT ✦ SCROLL FOR MORE ✦ MEME STASH ✦ CLICK
-						TO EXPORT ✦ SCROLL FOR MORE ✦
+						TO EXPORT ✦ SCROLL FOR MORE
 					</span>
 					<span>
 						✦ MEME STASH ✦ CLICK TO EXPORT ✦ SCROLL FOR MORE ✦ MEME
 						STASH ✦ CLICK TO EXPORT ✦ SCROLL FOR MORE ✦ MEME STASH ✦
 						CLICK TO EXPORT ✦ SCROLL FOR MORE ✦ MEME STASH ✦ CLICK
-						TO EXPORT ✦ SCROLL FOR MORE ✦
+						TO EXPORT ✦ SCROLL FOR MORE
 					</span>
 				</div>
 			</div>

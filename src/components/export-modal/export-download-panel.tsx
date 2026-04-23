@@ -75,10 +75,10 @@ export function ExportDownloadPanel({
 							className={cn(
 								"absolute inset-0 opacity-0",
 								isDownloading &&
-									"animate-shimmer bg-[linear-gradient(110deg,transparent_0%,transparent_38%,rgba(255,255,255,0.28)_48%,transparent_58%,transparent_100%)] bg-[length:200%_100%] opacity-100",
+									"animate-shimmer bg-[linear-gradient(110deg,transparent_0%,transparent_38%,rgba(255,255,255,0.28)_48%,transparent_58%,transparent_100%)] bg-size-[200%_100%] opacity-100",
 							)}
 						/>
-						<span className="relative flex items-center justify-center gap-2">
+						<span className="relative flex items-center justify-center gap-2 text-lg">
 							{isDownloading ? (
 								<Spinner data-icon="inline-start" />
 							) : isSuccess ? (
@@ -95,7 +95,7 @@ export function ExportDownloadPanel({
 							type="button"
 							onClick={onShare}
 							className={cn(
-								"meme-pressable shrink-0 rounded-2xl border-[2.5px] border-meme-ink bg-meme-paper px-4 py-3.5 text-meme-ink",
+								"meme-pressable shrink-0 rounded-2xl border-[2.5px] border-meme-ink bg-meme-paper px-4 py-3.5 text-meme-ink hover:bg-meme-accent2",
 								"[--meme-shadow-rest:4px_5px_0_var(--color-meme-ink)] [--meme-shadow-hover:6px_8px_0_var(--color-meme-ink)]",
 							)}
 							aria-label="Share meme"

@@ -13,7 +13,6 @@ import {
 	downloadFile,
 	getAssetUrl,
 	loadImg,
-	makeTitle,
 	triggerDownload,
 } from "@/lib/utils"
 import type { Dims, DownloadOrigin, MemeFormat, SizePreset } from "@/types"
@@ -277,8 +276,9 @@ export function SelectedMemeExportModal({
 				return
 			}
 
+			// Some native share targets duplicate pasted images when file shares
+			// also include title/text metadata. Share file only.
 			await navigator.share({
-				title: makeTitle(selectedMeme),
 				files: [file],
 			})
 		} catch (error) {

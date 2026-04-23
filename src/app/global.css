@@ -263,4 +263,31 @@
 		transform: translate(2px, 2px);
 		box-shadow: var(--meme-shadow-active);
 	}
+
+	.meme-transparent-grid {
+		background-color: var(--color-meme-paper);
+		background-image:
+			linear-gradient(
+				45deg,
+				color-mix(in srgb, var(--color-meme-ink) 10%, transparent) 25%,
+				transparent 25%
+			),
+			linear-gradient(
+				-45deg,
+				color-mix(in srgb, var(--color-meme-ink) 10%, transparent) 25%,
+				transparent 25%
+			),
+			linear-gradient(
+				45deg,
+				transparent 75%,
+				color-mix(in srgb, var(--color-meme-ink) 10%, transparent) 75%
+			),
+			linear-gradient(
+				-45deg,
+				transparent 75%,
+				color-mix(in srgb, var(--color-meme-ink) 10%, transparent) 75%
+			);
+		background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+		background-size: 18px 18px;
+	}
 }
