@@ -346,19 +346,6 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"farewell",
 		],
 	},
-	"freaky-sonic-sonic-the-hedgehog.gif": {
-		title: "Zesty Sonic Praying",
-		tags: [
-			"sonic the hedgehog",
-			"3d render",
-			"creepy",
-			"freaky",
-			"hands together",
-			"sharp teeth",
-			"plotting",
-			"cursed",
-		],
-	},
 	"ghee-khatam.gif": {
 		title: "Rajkummar Rao Ghee Khatam",
 		tags: [
