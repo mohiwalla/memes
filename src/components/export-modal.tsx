@@ -61,7 +61,7 @@ export function ExportModal({
 					isAnimated={isGif}
 				/>
 
-				<div className="meme-export-sidebar flex flex-col overflow-auto p-7 pt-7 pb-6 md:max-h-[92vh]">
+				<div className="flex flex-col p-4 pt-3 pb-4 max-md:overflow-visible md:max-h-[92vh] md:overflow-auto md:p-7 md:pt-7 md:pb-6">
 					<DialogHeader className="mb-5 gap-1">
 						<DialogTitle className="font-heading text-[28px] leading-tight tracking-tight text-meme-ink">
 							Export

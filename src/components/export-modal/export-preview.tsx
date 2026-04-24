@@ -15,13 +15,13 @@ export function ExportPreview({
 	const assetUrl = getAssetUrl(selectedMeme)
 
 	return (
-		<div className="meme-export-preview flex flex-col gap-4 overflow-auto border-meme-ink bg-meme-bg-2 p-8 md:max-h-[92vh] md:border-r-2 md:border-dashed">
-			<div className="meme-export-preview-stage grid min-h-70 flex-1 place-items-center">
+		<div className="flex flex-col gap-3 overflow-visible border-meme-ink bg-meme-bg-2 p-4 pb-3 md:max-h-[92vh] md:gap-4 md:overflow-auto md:border-r-2 md:border-dashed md:p-8">
+			<div className="grid min-h-40 flex-1 place-items-center md:min-h-70">
 				<div className="meme-transparent-grid max-w-full rounded-md border-2 border-meme-ink p-3.5 shadow-[4px_4px_0_var(--color-meme-ink)]">
 					<img
 						src={assetUrl}
 						alt={makeTitle(selectedMeme)}
-						className="meme-export-preview-image block"
+						className="block max-h-[24vh] max-w-full md:max-h-[55vh]"
 					/>
 				</div>
 			</div>

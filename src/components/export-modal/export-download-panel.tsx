@@ -53,7 +53,7 @@ export function ExportDownloadPanel({
 			</div>
 
 			<div className={cn("mt-3.5 flex flex-col gap-2")}>
-				<div className="meme-export-actions flex gap-2">
+				<div className="flex gap-2 max-md:flex-col">
 					<button
 						ref={downloadButtonRef}
 						onClick={event => onDownload(getDownloadOrigin(event))}
@@ -95,7 +95,7 @@ export function ExportDownloadPanel({
 							type="button"
 							onClick={onShare}
 							className={cn(
-								"meme-export-share meme-pressable shrink-0 rounded-2xl border-[2.5px] border-meme-ink bg-meme-paper px-4 py-3.5 text-meme-ink hover:bg-meme-accent2",
+								"meme-pressable shrink-0 rounded-2xl border-[2.5px] border-meme-ink bg-meme-paper px-4 py-3.5 text-meme-ink hover:bg-meme-accent2 max-md:w-full max-md:justify-center",
 								"[--meme-shadow-rest:4px_5px_0_var(--color-meme-ink)] [--meme-shadow-hover:6px_8px_0_var(--color-meme-ink)]",
 							)}
 							aria-label="Share meme"

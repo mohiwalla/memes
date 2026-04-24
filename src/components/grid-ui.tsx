@@ -303,7 +303,7 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 	)
 
 	return (
-		<main className="meme-grid-shell relative z-0">
+		<main className="relative z-0 px-4 pt-8 pb-20 min-[480px]:px-6 sm:px-12">
 			<div
 				ref={containerRef}
 				className="relative"
@@ -405,7 +405,7 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 							<img
 								draggable="false"
 								src="/images/404.png"
-								className="meme-empty-state-image -mb-10"
+								className="w-full max-w-80 -mb-10"
 							/>
 						</div>
 
