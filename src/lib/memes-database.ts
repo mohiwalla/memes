@@ -114,6 +114,8 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"aggressive",
 			"go away",
 			"sukhbir singh badal",
+			"bund",
+			"bund mraa",
 		],
 	},
 	"cast-net-fishing-fall.gif": {
@@ -340,6 +342,8 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"suit",
 			"sunglasses",
 			"greeting",
+			"hats off",
+			"farewell",
 		],
 	},
 	"freaky-sonic-sonic-the-hedgehog.gif": {
@@ -390,6 +394,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"man",
 			"text overlay",
 			"predator",
+			"bad touch",
 		],
 	},
 	"goth-baddie-please.gif": {
@@ -569,6 +574,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"night drive",
 			"windshield",
 			"staring ahead",
+			"eyes on you",
 		],
 	},
 	"james-harden-bye.gif": {
@@ -608,6 +614,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"celebrity reaction",
 			"deadpan",
 			"sarcastic",
+			"black",
 		],
 	},
 	"kanye-waste.gif": {
@@ -621,6 +628,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"stone faced",
 			"rapper reaction",
 			"realization",
+			"black",
 		],
 	},
 	"ketartine-ragondin.gif": {
@@ -636,19 +644,6 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"shouting",
 		],
 	},
-	"kétartine-ragondin.gif": {
-		title: "Screaming Marmot",
-		tags: [
-			"screaming marmot",
-			"yelling animal",
-			"high pitched",
-			"funny scream",
-			"wood railing",
-			"shock",
-			"surprise",
-			"distress",
-		],
-	},
 	"kmt-yeah.gif": {
 		title: "Bearded Man Pouting Face",
 		tags: [
@@ -659,6 +654,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"duck face",
 			"flirty look",
 			"funny expression",
+			"black",
 			"pouty",
 		],
 	},
@@ -675,6 +671,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"window",
 			"staring",
 			"looking out",
+			"chota lund",
 		],
 	},
 	"made-it-to-friday.gif": {
@@ -697,6 +694,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"sitting",
 			"looking",
 			"crossover",
+			"goth baddie",
 		],
 	},
 	"middle-finger-f-u.gif": {
@@ -817,6 +815,8 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"looking over",
 			"silent judgment",
 			"observant",
+			"big jugs",
+			"big ah cheeks",
 		],
 	},
 	"nub-nub-cat-13.gif": {
@@ -908,6 +908,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"offering",
 			"wholesome",
 			"sharing",
+			"jerking",
 		],
 	},
 	"nub-nub-cat-2.gif": {
@@ -934,6 +935,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"staring eyes",
 			"pink background",
 			"creepy cute",
+			"good touch",
 		],
 	},
 	"nub-nub-cat-6.gif": {
@@ -947,6 +949,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"judgmental",
 			"skeptical",
 			"concentrating",
+			"squint",
 		],
 	},
 	"nub-nub-cat-7.gif": {
@@ -1025,6 +1028,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"excited",
 			"victory",
 			"yay",
+			"backshots",
 		],
 	},
 	"nubcat-iwanttocatyou.gif": {
@@ -1049,6 +1053,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"looking up",
 			"realization",
 			"excited",
+			"fameer fuddi",
 		],
 	},
 	"oh-yeah.gif": {
@@ -1267,6 +1272,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"homework",
 			"pencil",
 			"focused",
+			"big ah cheeks",
 		],
 	},
 	"small-dihh.gif": {
@@ -1280,6 +1286,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"success",
 			"sunset",
 			"business",
+			"chota lund",
 		],
 	},
 	"sonic-zesty.gif": {
@@ -1306,6 +1313,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"look back",
 			"wavy hair",
 			"distrust",
+			"mommy",
 		],
 	},
 	"squinting-skeptical.gif": {
@@ -1481,6 +1489,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"judgmental",
 			"serious face",
 			"phone humor",
+			"majithiya",
 		],
 	},
 	"traumatized-dog.gif": {
@@ -1519,6 +1528,7 @@ export const MEMES_DATABASE: Record<string, MemeDatabaseEntry> = {
 			"pushing",
 			"rude behavior",
 			"cartoon slap",
+			"big ah dihh",
 		],
 	},
 	"what-you-sure.gif": {
