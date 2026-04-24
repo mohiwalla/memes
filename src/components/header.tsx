@@ -211,7 +211,7 @@ export function Header({
 	}, [])
 
 	return (
-		<header className="relative z-10 px-4 pt-9 pb-4 min-[480px]:px-6 sm:px-12">
+		<header className="sticky top-0 z-10 bg-meme-bg px-4 pt-9 pb-4 min-[480px]:px-6 sm:px-12 border-b-2 border-meme-ink/15 rounded-b-2xl">
 			<div className="flex flex-wrap items-center justify-between gap-5 max-md:flex-col max-md:items-stretch max-md:gap-4">
 				<div className="flex items-center gap-2.5 font-heading max-[479px]:gap-2">
 					<div className="relative size-13 shrink-0 -rotate-8 rounded-[50%_50%_50%_18%] border-3 border-meme-ink bg-meme-accent shadow-[5px_5px_0_var(--color-meme-ink)] scale-80 max-[479px]:size-11">
