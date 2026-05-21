@@ -124,6 +124,8 @@ const getSearchEntry = (name: string): SearchEntry => {
 
 export const getTagsForMeme = (name: string) => MEMES_DATABASE[name]?.tags ?? []
 
+export const isNewMeme = (name: string) => MEMES_DATABASE[name]?.isNew === true
+
 export function searchMemes(images: string[], query: string) {
 	const normalizedQuery = normalizeSearchValue(query)
 	if (!normalizedQuery) return images

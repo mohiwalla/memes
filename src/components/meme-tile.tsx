@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import { getAssetUrl, getExt, makeTitle } from "@/lib/utils"
+import { getAssetUrl, getExt, isNewMeme, makeTitle } from "@/lib/utils"
 
 type MemeTileProps = {
 	name: string
@@ -17,6 +17,7 @@ export function MemeTile({
 }: MemeTileProps) {
 	const [loaded, setLoaded] = useState(false)
 	const ext = getExt(name)
+	const isNew = isNewMeme(name)
 
 	return (
 		<button
@@ -62,6 +63,11 @@ export function MemeTile({
 				>
 					{ext}
 				</span>
+				{isNew && (
+					<span className="absolute top-2 left-2 -rotate-6 rounded-full border-2 border-meme-ink bg-meme-accent2 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-meme-ink">
+						new
+					</span>
+				)}
 			</div>
 			<div className="overflow-hidden text-ellipsis whitespace-nowrap p-3 px-1 text-[13px] font-semibold tracking-tight">
 				{makeTitle(name)}
