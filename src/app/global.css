@@ -297,10 +297,4 @@
 			-9px 0;
 		background-size: 18px 18px;
 	}
-
-	.meme-browser-grid {
-		display: grid;
-		gap: 22px;
-		grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
-	}
 }

@@ -41,6 +41,7 @@ Need:
 - Merge generated tags into database: [`scripts/write-tags-database.ts`](./scripts/write-tags-database.ts)
 - Generate titles from previews: [`scripts/generate-titles.ts`](./scripts/generate-titles.ts)
 - Merge generated titles into database: [`scripts/write-titles-database.ts`](./scripts/write-titles-database.ts)
+- Regenerate image dimensions for masonry grid: [`scripts/write-dimensions-database.ts`](./scripts/write-dimensions-database.ts)
 - Run end-to-end flow: [`scripts/run-tag-meme.ts`](./scripts/run-tag-meme.ts)
 
 ## Standard commands

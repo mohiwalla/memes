@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { computeMasonryLayout } from "@/lib/masonry-layout"
 import { MemeTile } from "./meme-tile"
 
 type MemeGridProps = {
@@ -8,18 +9,11 @@ type MemeGridProps = {
 	onOpenMeme: (name: string) => void
 }
 
-const GAP_PX = 22
-const MIN_OVERSCAN_ROWS = 10
-const MAX_OVERSCAN_ROWS = 30
-const OVERSCAN_VIEWPORTS = 4
+const OVERSCAN_VIEWPORTS = 1.5
 const SCROLL_BLUR_IDLE_MS = 48
 const REGULAR_SCROLL_SPEED_PX_PER_MS = 1.8
 const MAX_SCROLL_SPEED_PX_PER_MS = 12
 const MAX_SCROLL_BLUR_PX = 3.5
-const MIN_TILE_HEIGHT = 160
-const TILE_HORIZONTAL_PADDING_PX = 20
-const TILE_TOP_PADDING_PX = 10
-const TILE_TITLE_HEIGHT_PX = 44
 const MIN_VIRTUALIZED_RESULTS = 12
 const CARD_ENTER_TRANSITION = {
 	type: "spring",
@@ -72,40 +66,22 @@ const cardMotionVariants = {
 				},
 }
 
-type VirtualState = {
-	cols: number
+type ViewportState = {
 	gridTop: number
 	gridWidth: number
 	scrollY: number
-	tileHeight: number
 	viewportHeight: number
 }
 
-const getInitialVirtualState = (): VirtualState => ({
-	cols: 1,
+const getInitialViewportState = (): ViewportState => ({
 	gridTop: 0,
 	gridWidth: 0,
 	scrollY: typeof window === "undefined" ? 0 : window.scrollY,
-	tileHeight: 260,
 	viewportHeight: typeof window === "undefined" ? 0 : window.innerHeight,
 })
 
-const getEstimatedTileHeight = (gridWidth: number, cols: number) => {
-	const columnWidth = (gridWidth - GAP_PX * Math.max(0, cols - 1)) / cols
-	const imageWidth = Math.max(0, columnWidth - TILE_HORIZONTAL_PADDING_PX)
-
-	return Math.max(
-		MIN_TILE_HEIGHT,
-		Math.round(
-			imageWidth * 0.75 + TILE_TOP_PADDING_PX + TILE_TITLE_HEIGHT_PX,
-		),
-	)
-}
-
 export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 	const containerRef = useRef<HTMLDivElement>(null)
-	const gridRef = useRef<HTMLDivElement>(null)
-	const measureRef = useRef<HTMLDivElement>(null)
 	const lastScrollSampleRef = useRef({
 		time: 0,
 		y: 0,
@@ -113,14 +89,16 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 	const reduceMotion = useReducedMotion()
 	const scrollIdleTimeoutRef = useRef<number | null>(null)
 	const [scrollBlurPx, setScrollBlurPx] = useState(0)
-	const [virtualState, setVirtualState] = useState(getInitialVirtualState)
+	const [viewportState, setViewportState] = useState(getInitialViewportState)
+	const [measuredRatios, setMeasuredRatios] = useState<
+		Record<string, number>
+	>({})
 	const [renderedResultSet, setRenderedResultSet] = useState(() => ({
 		items,
 		isAnimating: false,
 	}))
 	const renderedItems = renderedResultSet.items
 	const animateResultChange = renderedResultSet.isAnimating && !reduceMotion
-	const safeCols = Math.max(1, virtualState.cols)
 	const shouldVirtualize = renderedItems.length >= MIN_VIRTUALIZED_RESULTS
 
 	useEffect(() => {
@@ -160,64 +138,36 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 			y: window.scrollY,
 		}
 
-		const updateVirtualState = () => {
+		const updateViewportState = () => {
 			rafId = 0
 
-			const container = containerRef.current
-			const containerRect = container?.getBoundingClientRect()
-			const gridWidth = Math.round(containerRect?.width ?? 0)
-			const gridTop = Math.round(
-				containerRect ? containerRect.top + window.scrollY : 0,
-			)
-			const computedGridTemplateColumns = window.getComputedStyle(
-				gridRef.current ?? container ?? document.body,
-			).gridTemplateColumns
-			const colsFromCss = Math.max(
-				1,
-				computedGridTemplateColumns
-					.split(" ")
-					.filter(track => track !== "none" && track.length > 0)
-					.length,
-			)
-			const measuredTileHeight = Math.round(
-				measureRef.current?.getBoundingClientRect().height ?? 0,
-			)
-			const tileHeight =
-				measuredTileHeight ||
-				getEstimatedTileHeight(gridWidth, colsFromCss)
+			const containerRect = containerRef.current?.getBoundingClientRect()
+			const next = {
+				gridTop: Math.round(
+					containerRect ? containerRect.top + window.scrollY : 0,
+				),
+				gridWidth: Math.round(containerRect?.width ?? 0),
+				scrollY: Math.round(window.scrollY),
+				viewportHeight: window.innerHeight,
+			}
 
-			setVirtualState(previous => {
-				const next = {
-					cols: colsFromCss,
-					gridTop,
-					gridWidth,
-					scrollY: Math.round(window.scrollY),
-					tileHeight,
-					viewportHeight: window.innerHeight,
-				}
-
-				if (
-					previous.cols === next.cols &&
-					previous.gridTop === next.gridTop &&
-					previous.gridWidth === next.gridWidth &&
-					previous.scrollY === next.scrollY &&
-					previous.tileHeight === next.tileHeight &&
-					previous.viewportHeight === next.viewportHeight
-				) {
-					return previous
-				}
-
-				return next
-			})
+			setViewportState(previous =>
+				previous.gridTop === next.gridTop &&
+				previous.gridWidth === next.gridWidth &&
+				previous.scrollY === next.scrollY &&
+				previous.viewportHeight === next.viewportHeight
+					? previous
+					: next,
+			)
 		}
 
-		const scheduleVirtualStateUpdate = () => {
+		const scheduleViewportStateUpdate = () => {
 			if (rafId) return
-			rafId = window.requestAnimationFrame(updateVirtualState)
+			rafId = window.requestAnimationFrame(updateViewportState)
 		}
 
 		const handleScroll = () => {
-			scheduleVirtualStateUpdate()
+			scheduleViewportStateUpdate()
 
 			const now = performance.now()
 			const y = window.scrollY
@@ -244,16 +194,16 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 			}, SCROLL_BLUR_IDLE_MS)
 		}
 
-		const resizeObserver = new ResizeObserver(scheduleVirtualStateUpdate)
+		const resizeObserver = new ResizeObserver(scheduleViewportStateUpdate)
 		if (containerRef.current) {
 			resizeObserver.observe(containerRef.current)
 		}
 
-		scheduleVirtualStateUpdate()
+		scheduleViewportStateUpdate()
 		window.addEventListener("scroll", handleScroll, {
 			passive: true,
 		})
-		window.addEventListener("resize", scheduleVirtualStateUpdate)
+		window.addEventListener("resize", scheduleViewportStateUpdate)
 
 		return () => {
 			if (rafId) {
@@ -264,115 +214,97 @@ export function GridUI({ items, search, onOpenMeme }: MemeGridProps) {
 			}
 			resizeObserver.disconnect()
 			window.removeEventListener("scroll", handleScroll)
-			window.removeEventListener("resize", scheduleVirtualStateUpdate)
+			window.removeEventListener("resize", scheduleViewportStateUpdate)
 		}
-	}, [renderedItems.length])
+	}, [])
 
-	const totalRows = Math.ceil(renderedItems.length / safeCols)
-	const rowHeight = virtualState.tileHeight + GAP_PX
-	const viewportRows = Math.ceil(virtualState.viewportHeight / rowHeight)
-	const overscanRows = Math.min(
-		MAX_OVERSCAN_ROWS,
-		Math.max(MIN_OVERSCAN_ROWS, viewportRows * OVERSCAN_VIEWPORTS),
+	const handleNaturalSize = useCallback(
+		(name: string, width: number, height: number) => {
+			if (!width || !height) return
+
+			setMeasuredRatios(previous =>
+				previous[name] === height / width
+					? previous
+					: { ...previous, [name]: height / width },
+			)
+		},
+		[],
 	)
-	const gridHeight =
-		totalRows === 0
-			? 0
-			: totalRows * virtualState.tileHeight + (totalRows - 1) * GAP_PX
-	const viewportTop = virtualState.scrollY - virtualState.gridTop
-	const viewportBottom = viewportTop + virtualState.viewportHeight
-	const rawStartRow = Math.max(
-		0,
-		Math.floor(viewportTop / rowHeight) - overscanRows,
-	)
-	const rawEndRow = Math.min(
-		totalRows,
-		Math.ceil(viewportBottom / rowHeight) + overscanRows,
-	)
-	const startRow = totalRows === 0 ? 0 : Math.min(rawStartRow, totalRows - 1)
-	const endRow = Math.min(totalRows, Math.max(startRow + 1, rawEndRow))
-	const startIndex = startRow * safeCols
-	const endIndex = Math.min(renderedItems.length, endRow * safeCols)
-	const offsetY = startRow * rowHeight
-	const visibleItems = useMemo(
+
+	const layout = useMemo(
 		() =>
-			shouldVirtualize
-				? renderedItems.slice(startIndex, endIndex)
-				: renderedItems,
-		[renderedItems, shouldVirtualize, startIndex, endIndex],
+			computeMasonryLayout(renderedItems, {
+				width: viewportState.gridWidth,
+				measuredRatios,
+			}),
+		[renderedItems, viewportState.gridWidth, measuredRatios],
 	)
+
+	const overscanPx = viewportState.viewportHeight * OVERSCAN_VIEWPORTS
+	const viewportTop = viewportState.scrollY - viewportState.gridTop
+	const visibleTop = viewportTop - overscanPx
+	const visibleBottom =
+		viewportTop + viewportState.viewportHeight + overscanPx
+	const visibleTiles = shouldVirtualize
+		? layout.tiles.filter(
+				tile =>
+					tile.y + tile.height >= visibleTop &&
+					tile.y <= visibleBottom,
+			)
+		: layout.tiles
 
 	return (
 		<main className="relative z-0 px-4 pt-8 pb-20 min-[480px]:px-6 sm:px-12">
 			<div
 				ref={containerRef}
 				className="relative"
-				style={
-					shouldVirtualize ? { height: `${gridHeight}px` } : undefined
-				}
+				style={{ height: `${layout.height}px` }}
 			>
-				<div
-					ref={gridRef}
-					className={
-						shouldVirtualize
-							? "meme-browser-grid absolute inset-x-0"
-							: "meme-browser-grid"
-					}
-					style={
-						shouldVirtualize
-							? {
-									transform: `translateY(${offsetY}px)`,
-								}
-							: undefined
-					}
+				<AnimatePresence
+					initial={false}
+					custom={animateResultChange}
+					mode="popLayout"
 				>
-					<AnimatePresence
-						initial={false}
-						custom={animateResultChange}
-						mode="popLayout"
-					>
-						{visibleItems.map((name, index) => (
-							<motion.div
-								key={name}
-								ref={
-									shouldVirtualize && index === 0
-										? measureRef
-										: undefined
-								}
-								custom={animateResultChange}
-								variants={cardMotionVariants}
-								initial={animateResultChange ? "hidden" : false}
-								animate="visible"
-								exit="exit"
-								layout={
-									animateResultChange ? "position" : false
-								}
-								transition={
-									animateResultChange
-										? {
-												...CARD_ENTER_TRANSITION,
-												delay:
-													Math.min(index, 8) *
-													CARD_STAGGER_SECONDS,
-											}
-										: { duration: 0 }
-								}
-								style={{
-									willChange: animateResultChange
-										? "opacity, transform"
-										: undefined,
-								}}
-							>
-								<MemeTile
-									name={name}
-									loading="eager"
-									scrollBlurPx={scrollBlurPx}
-									onClick={() => onOpenMeme(name)}
-								/>
-							</motion.div>
-						))}
-					</AnimatePresence>
-				</div>
+					{visibleTiles.map((tile, index) => (
+						<motion.div
+							key={tile.name}
+							custom={animateResultChange}
+							variants={cardMotionVariants}
+							initial={animateResultChange ? "hidden" : false}
+							animate="visible"
+							exit="exit"
+							layout={animateResultChange ? "position" : false}
+							transition={
+								animateResultChange
+									? {
+											...CARD_ENTER_TRANSITION,
+											delay:
+												Math.min(index, 8) *
+												CARD_STAGGER_SECONDS,
+										}
+									: { duration: 0 }
+							}
+							className="absolute hover:z-3"
+							style={{
+								left: tile.x,
+								top: tile.y,
+								width: tile.width,
+								height: tile.height,
+								willChange: animateResultChange
+									? "opacity, transform"
+									: undefined,
+							}}
+						>
+							<MemeTile
+								name={tile.name}
+								loading="eager"
+								scrollBlurPx={scrollBlurPx}
+								onClick={() => onOpenMeme(tile.name)}
+								onNaturalSize={handleNaturalSize}
+							/>
+						</motion.div>
+					))}
+				</AnimatePresence>
 			</div>
 
 			<AnimatePresence initial={false}>
