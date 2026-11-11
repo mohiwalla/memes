@@ -7,6 +7,7 @@ type MemeTileProps = {
 	loading?: "eager" | "lazy"
 	scrollBlurPx?: number
 	onClick: () => void
+	onNaturalSize?: (name: string, width: number, height: number) => void
 }
 
 export function MemeTile({
@@ -14,6 +15,7 @@ export function MemeTile({
 	loading = "lazy",
 	scrollBlurPx = 0,
 	onClick,
+	onNaturalSize,
 }: MemeTileProps) {
 	const [loaded, setLoaded] = useState(false)
 	const ext = getExt(name)
@@ -21,12 +23,12 @@ export function MemeTile({
 
 	return (
 		<button
-			className="group relative block w-full animate-tile-in rounded-meme border-[2.5px] border-meme-ink bg-meme-paper p-2.5 pb-0 text-left shadow-[5px_5px_0_var(--color-meme-ink)] transition-all hover:z-3 hover:scale-[1.015] hover:-translate-y-1.25 hover:-translate-x-0.75 hover:shadow-[10px_12px_0_var(--color-meme-ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_var(--color-meme-ink)]"
+			className="group relative flex h-full w-full flex-col animate-tile-in rounded-meme border-[2.5px] border-meme-ink bg-meme-paper p-2.5 pb-0 text-left shadow-[5px_5px_0_var(--color-meme-ink)] transition-all hover:z-3 hover:scale-[1.015] hover:-translate-y-1.25 hover:-translate-x-0.75 hover:shadow-[10px_12px_0_var(--color-meme-ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_var(--color-meme-ink)]"
 			onClick={onClick}
 		>
 			<div
 				className={cn(
-					"relative aspect-4/3 overflow-hidden rounded-lg bg-meme-bg-2 transition-opacity",
+					"relative min-h-0 flex-1 overflow-hidden rounded-lg bg-meme-bg-2 transition-opacity",
 					!loaded &&
 						"after:absolute after:inset-0 after:bg-linear-to-r after:from-transparent after:via-white/35 after:to-transparent after:bg-size-[200%_100%] after:animate-shimmer",
 				)}
@@ -36,10 +38,17 @@ export function MemeTile({
 					alt={makeTitle(name)}
 					loading={loading}
 					decoding="async"
-					onLoad={() => setLoaded(true)}
+					onLoad={event => {
+						setLoaded(true)
+						onNaturalSize?.(
+							name,
+							event.currentTarget.naturalWidth,
+							event.currentTarget.naturalHeight,
+						)
+					}}
 					onError={() => setLoaded(true)}
 					className={cn(
-						"block h-full w-full object-contain transition-[filter,opacity,transform] duration-200 ease-out will-change-[filter,opacity,transform] motion-reduce:transition-none",
+						"block h-full w-full object-cover transition-[filter,opacity,transform] duration-200 ease-out will-change-[filter,opacity,transform] motion-reduce:transition-none",
 						loaded
 							? "scale-100 opacity-100"
 							: "scale-[1.03] opacity-0 blur-xl",
@@ -69,7 +78,7 @@ export function MemeTile({
 					</span>
 				)}
 			</div>
-			<div className="overflow-hidden text-ellipsis whitespace-nowrap p-3 px-1 text-[13px] font-semibold tracking-tight">
+			<div className="h-11 shrink-0 overflow-hidden text-ellipsis whitespace-nowrap px-1 text-[13px] leading-11 font-semibold tracking-tight">
 				{makeTitle(name)}
 			</div>
 		</button>

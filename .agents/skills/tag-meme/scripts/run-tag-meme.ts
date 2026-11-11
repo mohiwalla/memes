@@ -49,3 +49,5 @@ run([
 if (!options.applyAfterBatch) {
 	run(["bun", ".agents/skills/tag-meme/scripts/write-tags-database.ts"])
 }
+
+run(["bun", ".agents/skills/tag-meme/scripts/write-dimensions-database.ts"])
