@@ -21,12 +21,12 @@ type LayoutOptions = {
 }
 
 const MIN_COLUMN_WIDTH_PX = 250
-const MIN_TWO_COLUMN_WIDTH_PX = 340
+const MIN_TWO_COLUMN_WIDTH_PX = 280
 const DESKTOP_GAP_PX = 22
 const MOBILE_GAP_PX = 12
 const MOBILE_BREAKPOINT_PX = 640
 const MIN_IMAGE_RATIO = 0.42
-const MAX_IMAGE_RATIO = 1.9
+const MAX_IMAGE_RATIO = 2.25
 const DEFAULT_IMAGE_RATIO = 0.75
 const WIDE_TILE_MAX_RATIO = 0.8
 const WIDE_TILE_MIN_COLS = 3
@@ -87,6 +87,7 @@ export function computeMasonryLayout(
 	if (width <= 0) return { cols, gap, height: 0, tiles }
 
 	const lastTileIndex = new Array<number>(cols).fill(-1)
+	const tileSpans: number[] = []
 
 	const placeTile = (
 		name: string,
@@ -108,6 +109,7 @@ export function computeMasonryLayout(
 			width: Math.round(tileWidth),
 			height: tileHeight,
 		})
+		tileSpans.push(span)
 
 		for (let c = col; c < col + span; c++) {
 			columnHeights[c] = top + tileHeight + gap
@@ -133,7 +135,14 @@ export function computeMasonryLayout(
 			const step = Math.abs(columnHeights[c] - columnHeights[c + 1])
 			const shorter = columnHeights[c] < columnHeights[c + 1] ? c : c + 1
 			if (step > WIDE_TILE_MAX_STEP_PX) continue
-			if (step > 0 && lastTileIndex[shorter] === -1) continue
+			// Only a single-column tile can stretch without overlapping the
+			// other column it would otherwise cover.
+			const stretchIndex = lastTileIndex[shorter]
+			if (
+				step > 0 &&
+				(stretchIndex === -1 || tileSpans[stretchIndex] > 1)
+			)
+				continue
 
 			const top = Math.max(columnHeights[c], columnHeights[c + 1])
 			if (!best || top < best.top) best = { col: c, top, shorter }
