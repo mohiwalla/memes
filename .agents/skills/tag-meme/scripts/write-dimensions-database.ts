@@ -82,8 +82,15 @@ const readJpeg = (buf: Buffer): Dimensions | null => {
 	return null
 }
 
-const readDimensions = (buf: Buffer) =>
-	readPng(buf) ?? readGif(buf) ?? readWebp(buf) ?? readJpeg(buf)
+// Truncated or malformed headers throw on fixed-offset reads; treat them as
+// unknown so one bad asset does not stop the whole run.
+const readDimensions = (buf: Buffer) => {
+	try {
+		return readPng(buf) ?? readGif(buf) ?? readWebp(buf) ?? readJpeg(buf)
+	} catch {
+		return null
+	}
+}
 
 const options = parseArgs()
 const dimensions: Record<string, Dimensions> = {}
